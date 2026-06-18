@@ -298,17 +298,28 @@
         };
 
         const saveTransaction = async (data) => {
-            const txData = {
-                ...data,
-                amount: Number(data.amount),
-                timestamp: new Date().toISOString()
-            };
-
-            if (state.db && state.userId) {
-                const docRef = doc(collection(state.db, 'artifacts', state.appId, 'users', state.userId, 'transactions'));
-                await setDoc(docRef, txData);
-            }
+        const txData = {
+            ...data,
+            amount: Number(data.amount),
+            timestamp: new Date().toISOString()
         };
+
+        // --- JALUR VIP KE FIREBASE ---
+        try {
+            // Memasukkan data ke dalam folder khusus bernama 'transaksi_bams'
+            const docRef = doc(collection(window.db, 'transaksi_bams'));
+            await setDoc(docRef, txData);
+            console.log("Berhasil! Data sukses mendarat di awan.");
+        } catch (error) {
+            console.error("Gagal terhubung ke awan:", error);
+        }
+
+        // --- Gerbang keamanan asli tetap kita simpan ---
+        if (state.db && state.userId) {
+            const docRef = doc(collection(state.db, 'artifacts', state.appId, 'users', state.userId, 'transactions'));
+            await setDoc(docRef, txData);
+        }
+    };
 
         const saveTargets = async (newTargets) => {
             state.targets = { ...state.targets, ...newTargets };
