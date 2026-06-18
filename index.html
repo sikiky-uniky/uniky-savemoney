@@ -119,6 +119,8 @@
                 }
 
                 const app = initializeApp(config);
+                const db = getFirestore(app);
+                window.db = db;
                 state.auth = getAuth(app);
                 state.db = getFirestore(app);
 
