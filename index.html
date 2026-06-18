@@ -534,7 +534,18 @@
         };
 
         window.submitTransaction = async (e) => {
-            e.preventDefault();
+        e.preventDefault();
+
+        // --- FITUR ANTI-SPAM MULAI ---
+        const btn = e.target.querySelector('button[type="submit"]') || e.target.querySelector('button');
+        const textAsli = btn ? btn.innerHTML : 'Simpan';
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+        // --- FITUR ANTI-SPAM SELESAI ---
+
             const type = document.getElementById('tx-type').value;
             const amount = parseFloat(document.getElementById('tx-amount').value);
             const category = document.getElementById('tx-category').value;
@@ -594,6 +605,12 @@
                 background: '#1f2937',
                 color: '#fff'
             });
+            // --- HIDUPKAN KEMBALI TOMBOL ---
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = textAsli;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
         };
 
         window.submitTargets = async (e) => {
