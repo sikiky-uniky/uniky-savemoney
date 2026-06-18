@@ -304,20 +304,18 @@
             timestamp: new Date().toISOString()
         };
 
-        // --- JALUR VIP KE FIREBASE ---
-        try {
-            // Memasukkan data ke dalam folder khusus bernama 'transaksi_bams'
-            const docRef = doc(collection(window.db, 'transaksi_bams'));
-            await setDoc(docRef, txData);
-            console.log("Berhasil! Data sukses mendarat di awan.");
-        } catch (error) {
-            console.error("Gagal terhubung ke awan:", error);
-        }
-
-        // --- Gerbang keamanan asli tetap kita simpan ---
+        // Gerbang Keamanan Utama: Hanya menyimpan jika user sudah Login
         if (state.db && state.userId) {
-            const docRef = doc(collection(state.db, 'artifacts', state.appId, 'users', state.userId, 'transactions'));
-            await setDoc(docRef, txData);
+            try {
+                // Menyimpan ke brankas khusus sesuai ID User
+                const docRef = doc(collection(state.db, 'artifacts', state.appId, 'users', state.userId, 'transactions'));
+                await setDoc(docRef, txData);
+                console.log("Mantap! Transaksi aman di brankas pribadimu.");
+            } catch (error) {
+                console.error("Waduh, gagal mengamankan transaksi:", error);
+            }
+        } else {
+            console.warn("User belum login, data tidak dikirim ke awan.");
         }
     };
 
