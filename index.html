@@ -200,7 +200,7 @@
                 snapshot.forEach(doc => {
                     state.transactions.push({ id: doc.id, ...doc.data() });
                 });
-                state.transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+                state.transactions.sort((a, b) => new Date(b.timestamp || b.date) - new Date(a.timestamp || a.date));
                 initializeAppUI();
                 showLoading(false);
             }, (error) => {
@@ -933,7 +933,7 @@
                     <div class="glass-card p-5 rounded-2xl">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="font-bold text-lg"><i class="fas fa-history text-gray-400"></i> Riwayat Terakhir</h3>
-                            <button onclick="switchTab('input')" class="text-sm text-blue-400 hover:text-blue-300">Lihat Semua / Tambah</button>
+                            <button onclick="switchTab('input')" class="text-sm text-blue-400 hover:text-blue-300">➕ Tambah Transaksi</button>
                         </div>
                         <div id="transaction-list" class="max-h-60 overflow-y-auto pr-2">
                         </div>
