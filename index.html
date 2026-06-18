@@ -727,6 +727,26 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
     </style>
+<style>
+    /* Mengubah background utama */
+    body { background-color: #0f172a !important; color: white !important; }
+    
+    /* Mengubah kartu-kartu statistik */
+    /* Kita menargetkan class 'border' yang dipakai di JS lamamu */
+    .border { 
+        background-color: #1e293b !important; 
+        border: 1px solid #334155 !important; 
+        border-radius: 1rem !important; 
+        padding: 1.5rem !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Memperbaiki warna teks agar kontras dengan background gelap */
+    .text-black { color: white !important; }
+    
+    /* Menambahkan efek smooth */
+    .border:hover { border-color: #3b82f6 !important; transition: 0.3s; }
+</style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans min-h-screen transition-colors duration-500 pb-20 md:pb-0">
 
