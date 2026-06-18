@@ -320,12 +320,23 @@
     };
 
         const saveTargets = async (newTargets) => {
-            state.targets = { ...state.targets, ...newTargets };
-            if (state.db && state.userId) {
+        // Update ingatan lokal aplikasi agar layar langsung merespon
+        state.targets = { ...state.targets, ...newTargets };
+
+        // Gerbang Keamanan Firebase
+        if (state.db && state.userId) {
+            try {
                 const docRef = doc(state.db, 'artifacts', state.appId, 'users', state.userId, 'settings', 'targets');
-                await setDoc(docRef, state.targets);
+                // Pakai merge: true agar data lain (seperti target dana darurat nanti) tidak ikut terhapus
+                await setDoc(docRef, state.targets, { merge: true }); 
+                console.log("Mantap! Target sukses mendarat di awan.");
+            } catch (error) {
+                console.error("Waduh, gagal menyimpan target:", error);
             }
-        };
+        } else {
+            console.warn("User belum login, target tidak disimpan ke awan.");
+        }
+    };
 
         const deleteTx = async (id) => {
             if (state.db && state.userId) {
@@ -878,7 +889,7 @@
     <span class="bg-red-900 border border-red-500 px-2 py-1 rounded text-xs font-bold text-red-200 whitespace-nowrap">Terakhir. Uang Bebas</span>
 </div>
 
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+<div class="grid grid-cols-2 2xl:grid-cols-4 gap-4 mt-4">
     <div class="glass-card p-4 rounded-2xl border-t-2 border-t-emerald-400 overflow-hidden">
         <p class="text-gray-400 text-[10px] md:text-xs mb-1 uppercase font-bold truncate"><i class="fas fa-wallet mr-1"></i> Total Saldo</p>
         <p id="lbl-saldo" class="text-lg lg:text-xl xl:text-2xl font-black text-white truncate">Rp 0</p>
