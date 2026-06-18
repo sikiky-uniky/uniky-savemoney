@@ -487,11 +487,20 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        data: data,
-                        backgroundColor: bgColors,
-                        borderWidth: 1,
-                        borderColor: '#1f2937'
-                    }]
+                data: data,
+                backgroundColor: [
+                    '#3b82f6', // Biru
+                    '#ef4444', // Merah
+                    '#f59e0b', // Kuning Emas
+                    '#10b981', // Hijau Emerald
+                    '#8b5cf6', // Ungu
+                    '#ec4899', // Pink
+                    '#06b6d4', // Cyan
+                    '#f97316'  // Orange
+                ],
+                borderWidth: 1,
+                borderColor: '#1f2937'
+            }]
                 },
                 options: {
                     responsive: true,
