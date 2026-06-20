@@ -844,6 +844,27 @@ window.updateFilterDashboard = () => {
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').then(() => console.log('Aplikasi UNIKY siap di-install!'));
 }
+// Fitur Sensor Saldo
+window.saldoVisible = true;
+window.toggleSaldo = () => {
+    const elSaldo = document.getElementById('lbl-saldo');
+    const elEye = document.getElementById('eye-icon');
+    
+    if (window.saldoVisible) {
+        // Simpan angka asli sembunyi-sembunyi sebelum disensor
+        if (elSaldo.innerText !== 'Rp ••••••••') {
+            elSaldo.setAttribute('data-asli', elSaldo.innerText);
+        }
+        elSaldo.innerText = 'Rp ••••••••';
+        elEye.className = 'fas fa-eye-slash text-red-400'; // Ikon mata tertutup warna merah
+        window.saldoVisible = false;
+    } else {
+        // Kembalikan angka aslinya
+        elSaldo.innerText = elSaldo.getAttribute('data-asli') || 'Rp 0';
+        elEye.className = 'fas fa-eye text-emerald-400'; // Ikon mata terbuka warna hijau
+        window.saldoVisible = true;
+    }
+};
     </script>
     <style>
         ::-webkit-scrollbar { width: 8px; }
@@ -946,7 +967,7 @@ if ('serviceWorker' in navigator) {
             <nav class="md:w-64 shrink-0 fixed bottom-0 left-0 right-0 bg-gray-800 md:bg-transparent md:static border-t border-gray-700 md:border-none z-30 flex md:flex-col justify-around md:justify-start p-2 md:p-0 md:space-y-4">
                 
                 <div class="hidden md:block mb-6 text-center glass-card p-4 rounded-2xl">
-                    <i class="fas fa-shield-alt text-4xl text-blue-400 mb-2"></i>
+                    <img src="logo.png" alt="Logo UNIKY" class="w-20 h-20 object-contain mx-auto mb-2" style="mix-blend-mode: screen;">
                     <h1 class="font-black text-xl text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">UNIKY</h1>
                     <p class="text-[10px] text-gray-400 uppercase tracking-widest mt-1" id="user-email-display">user@email.com</p>
                 </div>
@@ -1007,7 +1028,12 @@ if ('serviceWorker' in navigator) {
 <div class="grid grid-cols-2 2xl:grid-cols-4 gap-4 mt-4">
     <div class="glass-card p-4 rounded-2xl border-t-2 border-t-emerald-400 overflow-hidden">
         <p class="text-gray-400 text-[10px] md:text-xs mb-1 uppercase font-bold truncate"><i class="fas fa-wallet mr-1"></i> Total Saldo</p>
-        <p id="lbl-saldo" class="text-lg lg:text-xl xl:text-2xl font-black text-white truncate">Rp 0</p>
+        <div class="flex justify-between items-center mt-1">
+    <p id="lbl-saldo" class="text-lg lg:text-xl xl:text-2xl font-black text-white truncate">Rp 0</p>
+    <button onclick="toggleSaldo()" class="text-gray-400 hover:text-emerald-400 transition-colors focus:outline-none">
+        <i id="eye-icon" class="fas fa-eye"></i>
+    </button>
+</div>
     </div>
     <div class="glass-card p-4 rounded-2xl border-t-2 border-t-blue-400 overflow-hidden">
         <p class="text-gray-400 text-[10px] md:text-xs mb-1 uppercase font-bold truncate"><i class="fas fa-arrow-down mr-1"></i> Masuk</p>
