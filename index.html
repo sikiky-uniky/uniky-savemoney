@@ -865,6 +865,12 @@ window.toggleSaldo = () => {
         window.saldoVisible = true;
     }
 };
+// Fitur Haptic Feedback (Getar Premium) otomatis untuk semua tombol
+document.querySelectorAll('button, .nav-btn').forEach(tombol => {
+    tombol.addEventListener('click', () => {
+        if (navigator.vibrate) navigator.vibrate(40); 
+    });
+});
     </script>
     <style>
         ::-webkit-scrollbar { width: 8px; }
