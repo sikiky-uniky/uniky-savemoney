@@ -980,21 +980,21 @@
                 <img src="logo.png" alt="Logo UNIKY"
                     class="w-20 h-20 mx-auto mb-4 object-contain drop-shadow-[0_0_15px_rgba(255,215,0,0.4)]"
                     style="mix-blend-mode: screen;">
-                <h1 class="text-2xl font-black text-white">Akses Akun Aman</h1>
-                <p class="text-sm text-gray-400 mt-1">Sistem Keuangan Ekstrem - Multi Perangkat</p>
+                <h1 class="text-xl font-black text-white uppercase tracking-widest">Portal UNIKY</h1>
+                <p class="text-sm text-gray-400 mt-1">Manajemen Keuangan Privat - Ekosistem Terpadu</p>
             </div>
 
             <form onsubmit="window.handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Email</label>
-                    <input type="email" id="auth-email" required placeholder="nama@email.com"
-                        class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                    <input type="email" id="auth-email" required placeholder="akses@email.com"
+                        class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/40 focus:outline-none transition-all duration-300">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Password</label>
                     <div class="relative">
                         <input type="password" id="auth-password" required placeholder="••••••••"
-                            class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 pr-12 text-white focus:border-blue-500 focus:outline-none transition-colors">
+                            class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 pr-12 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/40 focus:outline-none transition-all duration-300">
                         <button type="button" onclick="togglePassword()"
                             class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-400 transition-colors focus:outline-none">
                             <i id="eye-icon-login" class="fas fa-eye"></i>
@@ -1004,19 +1004,19 @@
 
                 <div class="pt-2 grid grid-cols-2 gap-3">
                     <button type="submit"
-                        class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition shadow-lg">
+                        class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(59,130,246,0.6)]">
                         <i class="fas fa-sign-in-alt mr-1"></i> Masuk
                     </button>
                     <button type="button" onclick="window.handleRegister()"
-                        class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-xl transition border border-gray-700">
+                        class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-xl transition-all duration-300 border border-transparent hover:border-gray-500 hover:text-white">
                         <i class="fas fa-user-plus mr-1"></i> Daftar Baru
                     </button>
                 </div>
             </form>
             <div
-                class="mt-6 text-center text-[11px] text-gray-500 bg-gray-900/50 p-2 rounded-lg border border-gray-800">
-                💡 <span class="font-semibold">PENTING:</span> Gunakan email aktif agar akun Anda tersambung sempurna
-                antara HP, Laptop, dan Tablet Anda secara real-time.
+                class="mt-6 text-center text-[11px] text-gray-500 bg-gray-900/50 p-3 rounded-lg border border-gray-800">
+                💡 <span class="font-semibold text-gray-400">Enkripsi Aktif:</span> Sinkronisasi <i
+                    class="italic">real-time</i> lintas perangkat memerlukan kredensial resmi UNIKY.
             </div>
         </div>
     </div>
