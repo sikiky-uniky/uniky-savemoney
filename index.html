@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html lang="id" class="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Keuangan Ekstrem - Mode Nabung Nikah</title>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <script type="module">
-      window.words = [];
+        window.words = [];
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -47,14 +48,14 @@
             'Air': { type: 'expense', priority: 'wajib', color: 'text-blue-400' },
             'Sewa': { type: 'expense', priority: 'wajib', color: 'text-blue-400' },
             'Hutang': { type: 'expense', priority: 'wajib', color: 'text-blue-400' },
-            
+
             'Pulsa': { type: 'expense', priority: 'penting', color: 'text-yellow-400' },
             'Internet': { type: 'expense', priority: 'penting', color: 'text-yellow-400' },
             'Nikah': { type: 'expense', priority: 'penting', color: 'text-yellow-400' },
             'Dana Darurat': { type: 'expense', priority: 'penting', color: 'text-yellow-400' },
             'Orang Tua': { type: 'expense', priority: 'penting', color: 'text-yellow-400' },
             'Investasi': { type: 'expense', priority: 'penting', color: 'text-yellow-400' },
-            
+
             'Hiburan': { type: 'expense', priority: 'tidak penting', color: 'text-red-500' },
             'Belanja Online': { type: 'expense', priority: 'tidak penting', color: 'text-red-500' },
             'Jajan': { type: 'expense', priority: 'tidak penting', color: 'text-red-500' },
@@ -62,7 +63,7 @@
             'Kopi': { type: 'expense', priority: 'tidak penting', color: 'text-red-500' },
             'Game': { type: 'expense', priority: 'tidak penting', color: 'text-red-500' },
             'Lain-lain': { type: 'expense', priority: 'tidak penting', color: 'text-red-500' },
-            
+
             'Gaji': { type: 'income', priority: 'pemasukan', color: 'text-green-400' },
             'Bonus': { type: 'income', priority: 'pemasukan', color: 'text-green-400' },
             'Sampingan': { type: 'income', priority: 'pemasukan', color: 'text-green-400' }
@@ -161,7 +162,7 @@
         window.handleRegister = async () => {
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
-            if(!email || !password) {
+            if (!email || !password) {
                 Swal.fire('Input Kosong', 'Isi email dan password terlebih dahulu!', 'warning');
                 return;
             }
@@ -189,7 +190,7 @@
 
         const fetchData = () => {
             if (!state.userId || !state.db) return;
-            
+
             showLoading(true);
 
             // Fetch Transactions
@@ -237,14 +238,14 @@
             let danaDarurat = 0;
             let danaOrtu = 0;
             let totalTerbuang = 0;
-            
+
             let catExpenses = {};
 
             state.transactions.forEach(tx => {
                 const txDate = new Date(tx.date);
                 const isCurrentMonth = txDate.getMonth() === currentMonth && txDate.getFullYear() === currentYear;
-                const isLastMonth = txDate.getMonth() === (currentMonth - 1 + 12) % 12 && 
-                                    (currentMonth === 0 ? txDate.getFullYear() === currentYear - 1 : txDate.getFullYear() === currentYear);
+                const isLastMonth = txDate.getMonth() === (currentMonth - 1 + 12) % 12 &&
+                    (currentMonth === 0 ? txDate.getFullYear() === currentYear - 1 : txDate.getFullYear() === currentYear);
 
                 const amount = Number(tx.amount);
 
@@ -271,23 +272,23 @@
                 }
             });
 
-            let sisaUang = saldo; 
+            let sisaUang = saldo;
 
             // Hitung Streak Hemat
             let streak = 0;
             let d = new Date();
-            while(true) {
+            while (true) {
                 let dateStr = d.toISOString().split('T')[0];
-                let hasBadExpense = state.transactions.some(tx => 
-                    tx.date === dateStr && 
-                    tx.type === 'expense' && 
+                let hasBadExpense = state.transactions.some(tx =>
+                    tx.date === dateStr &&
+                    tx.type === 'expense' &&
                     CATEGORIES[tx.category]?.priority === 'tidak penting'
                 );
-                
-                if(hasBadExpense) break;
+
+                if (hasBadExpense) break;
                 streak++;
                 d.setDate(d.getDate() - 1);
-                if(streak > 1000) break;
+                if (streak > 1000) break;
             }
 
             return {
@@ -298,45 +299,45 @@
         };
 
         const saveTransaction = async (data) => {
-        const txData = {
-            ...data,
-            amount: Number(data.amount),
-            timestamp: new Date().toISOString()
+            const txData = {
+                ...data,
+                amount: Number(data.amount),
+                timestamp: new Date().toISOString()
+            };
+
+            // Gerbang Keamanan Utama: Hanya menyimpan jika user sudah Login
+            if (state.db && state.userId) {
+                try {
+                    // Menyimpan ke brankas khusus sesuai ID User
+                    const docRef = doc(collection(state.db, 'artifacts', state.appId, 'users', state.userId, 'transactions'));
+                    await setDoc(docRef, txData);
+                    console.log("Mantap! Transaksi aman di brankas pribadimu.");
+                } catch (error) {
+                    console.error("Waduh, gagal mengamankan transaksi:", error);
+                }
+            } else {
+                console.warn("User belum login, data tidak dikirim ke awan.");
+            }
         };
 
-        // Gerbang Keamanan Utama: Hanya menyimpan jika user sudah Login
-        if (state.db && state.userId) {
-            try {
-                // Menyimpan ke brankas khusus sesuai ID User
-                const docRef = doc(collection(state.db, 'artifacts', state.appId, 'users', state.userId, 'transactions'));
-                await setDoc(docRef, txData);
-                console.log("Mantap! Transaksi aman di brankas pribadimu.");
-            } catch (error) {
-                console.error("Waduh, gagal mengamankan transaksi:", error);
-            }
-        } else {
-            console.warn("User belum login, data tidak dikirim ke awan.");
-        }
-    };
-
         const saveTargets = async (newTargets) => {
-        // Update ingatan lokal aplikasi agar layar langsung merespon
-        state.targets = { ...state.targets, ...newTargets };
+            // Update ingatan lokal aplikasi agar layar langsung merespon
+            state.targets = { ...state.targets, ...newTargets };
 
-        // Gerbang Keamanan Firebase
-        if (state.db && state.userId) {
-            try {
-                const docRef = doc(state.db, 'artifacts', state.appId, 'users', state.userId, 'settings', 'targets');
-                // Pakai merge: true agar data lain (seperti target dana darurat nanti) tidak ikut terhapus
-                await setDoc(docRef, state.targets, { merge: true }); 
-                console.log("Mantap! Target sukses mendarat di awan.");
-            } catch (error) {
-                console.error("Waduh, gagal menyimpan target:", error);
+            // Gerbang Keamanan Firebase
+            if (state.db && state.userId) {
+                try {
+                    const docRef = doc(state.db, 'artifacts', state.appId, 'users', state.userId, 'settings', 'targets');
+                    // Pakai merge: true agar data lain (seperti target dana darurat nanti) tidak ikut terhapus
+                    await setDoc(docRef, state.targets, { merge: true });
+                    console.log("Mantap! Target sukses mendarat di awan.");
+                } catch (error) {
+                    console.error("Waduh, gagal menyimpan target:", error);
+                }
+            } else {
+                console.warn("User belum login, target tidak disimpan ke awan.");
             }
-        } else {
-            console.warn("User belum login, target tidak disimpan ke awan.");
-        }
-    };
+        };
 
         const deleteTx = async (id) => {
             if (state.db && state.userId) {
@@ -360,7 +361,7 @@
             document.getElementById('lbl-masuk').innerText = formatRupiah(stats.pemasukanBulanIni);
             document.getElementById('lbl-keluar').innerText = formatRupiah(stats.pengeluaranBulanIni);
             document.getElementById('lbl-sisa').innerText = formatRupiah(stats.sisaUang);
-            
+
             document.getElementById('lbl-terbuang').innerText = formatRupiah(stats.totalTerbuang);
             document.getElementById('lbl-streak').innerHTML = `${stats.streak} Hari! 🔥 ${getBadgeHemat(stats.streak)}`;
 
@@ -382,7 +383,7 @@
 
             const countdownEl = document.getElementById('nikah-countdown');
             const saranEl = document.getElementById('nikah-saran');
-            
+
             if (state.targets.nikahDate && state.targets.nikahAmount > 0) {
                 const targetDate = new Date(state.targets.nikahDate);
                 const now = new Date();
@@ -413,8 +414,8 @@
             listEl.innerHTML = '';
 
             const recentTx = state.transactions.slice(0, 10);
-            
-            if(recentTx.length === 0) {
+
+            if (recentTx.length === 0) {
                 listEl.innerHTML = `<p class="text-gray-400 text-center py-4">Belum ada data transaksi.</p>`;
                 return;
             }
@@ -424,13 +425,13 @@
                 const isExpense = tx.type === 'expense';
                 const sign = isExpense ? '-' : '+';
                 const colorAmount = isExpense ? 'text-red-400' : 'text-green-400';
-                
+
                 let warningBadge = '';
-    if(catInfo.priority === 'tidak penting') {
-        warningBadge = `<div style="display: inline-flex; align-items: center; justify-content: center; padding: 2px 8px; border-radius: 9999px; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; background-color: rgba(239, 68, 68, 0.1); color: rgb(248, 113, 113); border: 1px solid rgba(239, 68, 68, 0.3); margin-left: 8px; height: 20px; line-height: 1; white-space: nowrap;">❌ TIDAK PENTING</div>`;
-    } else if (catInfo.priority === 'wajib') {
-        warningBadge = `<div style="display: inline-flex; align-items: center; justify-content: center; padding: 2px 8px; border-radius: 9999px; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; background-color: rgba(59, 130, 246, 0.1); color: rgb(96, 165, 250); border: 1px solid rgba(59, 130, 246, 0.3); margin-left: 8px; height: 20px; line-height: 1; white-space: nowrap;">✅ WAJIB</div>`;
-    }
+                if (catInfo.priority === 'tidak penting') {
+                    warningBadge = `<div style="display: inline-flex; align-items: center; justify-content: center; padding: 2px 8px; border-radius: 9999px; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; background-color: rgba(239, 68, 68, 0.1); color: rgb(248, 113, 113); border: 1px solid rgba(239, 68, 68, 0.3); margin-left: 8px; height: 20px; line-height: 1; white-space: nowrap;">❌ TIDAK PENTING</div>`;
+                } else if (catInfo.priority === 'wajib') {
+                    warningBadge = `<div style="display: inline-flex; align-items: center; justify-content: center; padding: 2px 8px; border-radius: 9999px; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; background-color: rgba(59, 130, 246, 0.1); color: rgb(96, 165, 250); border: 1px solid rgba(59, 130, 246, 0.3); margin-left: 8px; height: 20px; line-height: 1; white-space: nowrap;">✅ WAJIB</div>`;
+                }
 
                 listEl.innerHTML += `
                     <div class="flex justify-between items-center bg-gray-800/50 p-3 rounded-xl border border-gray-700 mb-2 hover:bg-gray-700/50 transition">
@@ -450,12 +451,12 @@
         const checkAntiBoros = (stats) => {
             const body = document.body;
             const peringatanEl = document.getElementById('anti-boros-warning');
-            
+
             if (stats.pengeluaranBulanIni > stats.pengeluaranBulanLalu && stats.pengeluaranBulanLalu > 0) {
                 const percent = ((stats.pengeluaranBulanIni - stats.pengeluaranBulanLalu) / stats.pengeluaranBulanLalu * 100).toFixed(1);
                 peringatanEl.classList.remove('hidden');
                 document.getElementById('anti-boros-text').innerText = `Peringatan: Pengeluaran bulan ini naik ${percent}% dibanding bulan lalu!`;
-                
+
                 if (percent > 50) {
                     body.classList.add('border-4', 'border-red-600', 'animate-pulse');
                 } else {
@@ -469,38 +470,38 @@
 
         const updateCharts = (stats) => {
             const ctxPie = document.getElementById('pieChart');
-            if(!ctxPie) return;
+            if (!ctxPie) return;
 
             const labels = Object.keys(stats.catExpenses);
             const data = Object.values(stats.catExpenses);
             const bgColors = labels.map(l => {
                 const p = CATEGORIES[l]?.priority;
-                if(p === 'wajib') return '#3b82f6';
-                if(p === 'penting') return '#eab308';
+                if (p === 'wajib') return '#3b82f6';
+                if (p === 'penting') return '#eab308';
                 return '#ef4444';
             });
 
-            if(charts.pie) charts.pie.destroy();
+            if (charts.pie) charts.pie.destroy();
 
             charts.pie = new Chart(ctxPie, {
                 type: 'doughnut',
                 data: {
                     labels: labels,
                     datasets: [{
-                data: data,
-                backgroundColor: [
-                    '#3b82f6', // Biru
-                    '#ef4444', // Merah
-                    '#f59e0b', // Kuning Emas
-                    '#10b981', // Hijau Emerald
-                    '#8b5cf6', // Ungu
-                    '#ec4899', // Pink
-                    '#06b6d4', // Cyan
-                    '#f97316'  // Orange
-                ],
-                borderWidth: 1,
-                borderColor: '#1f2937'
-            }]
+                        data: data,
+                        backgroundColor: [
+                            '#3b82f6', // Biru
+                            '#ef4444', // Merah
+                            '#f59e0b', // Kuning Emas
+                            '#10b981', // Hijau Emerald
+                            '#8b5cf6', // Ungu
+                            '#ec4899', // Pink
+                            '#06b6d4', // Cyan
+                            '#f97316'  // Orange
+                        ],
+                        borderWidth: 1,
+                        borderColor: '#1f2937'
+                    }]
                 },
                 options: {
                     responsive: true,
@@ -520,8 +521,8 @@
             const tahunan = harian * 365;
 
             document.getElementById('sim-result').innerText = formatRupiah(tahunan);
-            document.getElementById('sim-days').innerText = state.targets.nikahAmount > 0 && harian > 0 
-                ? `Setara dengan mempercepat nikah ${(tahunan / (state.targets.nikahAmount/365)).toFixed(0)} hari!` 
+            document.getElementById('sim-days').innerText = state.targets.nikahAmount > 0 && harian > 0
+                ? `Setara dengan mempercepat nikah ${(tahunan / (state.targets.nikahAmount / 365)).toFixed(0)} hari!`
                 : '';
         };
 
@@ -529,24 +530,24 @@
         window.switchTab = (tabId) => {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('text-blue-400', 'border-b-2', 'border-blue-400'));
-            
+
             document.getElementById(`view-${tabId}`).classList.remove('hidden');
             const btn = document.getElementById(`nav-${tabId}`);
-            if(btn) btn.classList.add('text-blue-400', 'border-b-2', 'border-blue-400');
+            if (btn) btn.classList.add('text-blue-400', 'border-b-2', 'border-blue-400');
         };
 
         window.populateCategories = () => {
             const type = document.getElementById('tx-type').value;
             const catSelect = document.getElementById('tx-category');
             catSelect.innerHTML = '';
-            
+
             for (let cat in CATEGORIES) {
                 if (CATEGORIES[cat].type === type) {
                     const priority = CATEGORIES[cat].priority;
                     let emoji = '';
-                    if(priority === 'wajib') emoji = '✅';
-                    else if(priority === 'penting') emoji = '⚠';
-                    else if(priority === 'tidak penting') emoji = '❌';
+                    if (priority === 'wajib') emoji = '✅';
+                    else if (priority === 'penting') emoji = '⚠';
+                    else if (priority === 'tidak penting') emoji = '❌';
 
                     catSelect.innerHTML += `<option value="${cat}">${emoji} ${cat} (${priority.toUpperCase()})</option>`;
                 }
@@ -554,17 +555,17 @@
         };
 
         window.submitTransaction = async (e) => {
-        e.preventDefault();
+            e.preventDefault();
 
-        // --- FITUR ANTI-SPAM MULAI ---
-        const btn = e.target.querySelector('button[type="submit"]') || e.target.querySelector('button');
-        const textAsli = btn ? btn.innerHTML : 'Simpan';
-        if (btn) {
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
-        }
-        // --- FITUR ANTI-SPAM SELESAI ---
+            // --- FITUR ANTI-SPAM MULAI ---
+            const btn = e.target.querySelector('button[type="submit"]') || e.target.querySelector('button');
+            const textAsli = btn ? btn.innerHTML : 'Simpan';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+            // --- FITUR ANTI-SPAM SELESAI ---
 
             const type = document.getElementById('tx-type').value;
             const amount = parseFloat(document.getElementById('tx-amount').value);
@@ -576,11 +577,11 @@
 
             if (type === 'expense') {
                 const priority = CATEGORIES[category].priority;
-                
+
                 if (priority === 'tidak penting') {
                     const stats = calculateStats();
-                    if(amount > stats.sisaUang * 0.1) {
-                         const resultWarning = await Swal.fire({
+                    if (amount > stats.sisaUang * 0.1) {
+                        const resultWarning = await Swal.fire({
                             title: 'YAKIN MAU BELI INI?',
                             html: `
                                 <p class="mb-4">Ini kategori <b>TIDAK PENTING</b>.</p>
@@ -616,7 +617,7 @@
             e.target.reset();
             document.getElementById('tx-date').valueAsDate = new Date();
             populateCategories();
-            
+
             Swal.fire({
                 title: 'Tercatat!',
                 icon: 'success',
@@ -626,20 +627,20 @@
                 color: '#fff'
             });
             // --- HIDUPKAN KEMBALI TOMBOL ---
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = textAsli;
-            btn.classList.remove('opacity-50', 'cursor-not-allowed');
-        }
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = textAsli;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
         };
 
         window.submitTargets = async (e) => {
             e.preventDefault();
             const tDate = document.getElementById('target-nikah-date').value;
             const tAmount = parseFloat(document.getElementById('target-nikah-amount').value) || 0;
-            
+
             await saveTargets({ nikahDate: tDate, nikahAmount: tAmount });
-            
+
             Swal.fire({
                 title: 'Target Diperbarui!',
                 text: 'Mulai disiplin dari sekarang.',
@@ -667,94 +668,94 @@
         window.showLoading = (show) => {
             document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none';
         }
-function formatWaktuRelatif(tanggalInput) {
-    const hariIni = new Date();
-    hariIni.setHours(0, 0, 0, 0);
-    
-    const tglTx = new Date(tanggalInput);
-    tglTx.setHours(0, 0, 0, 0);
+        function formatWaktuRelatif(tanggalInput) {
+            const hariIni = new Date();
+            hariIni.setHours(0, 0, 0, 0);
 
-    const selisihWaktu = hariIni - tglTx;
-    const selisihHari = Math.floor(selisihWaktu / (1000 * 60 * 60 * 24));
+            const tglTx = new Date(tanggalInput);
+            tglTx.setHours(0, 0, 0, 0);
 
-    if (selisihHari === 0) {
-        return '<span class="text-green-400 font-bold text-[11px]">Hari Ini</span>';
-    } else if (selisihHari === 1) {
-        return '<span class="text-blue-400 font-bold text-[11px]">Kemarin</span>';
-    } else if (selisihHari > 1 && selisihHari <= 7) {
-        return `<span class="text-gray-300 text-[11px]">${selisihHari} Hari yang lalu</span>`;
-    }
-    
-    return `<span class="text-gray-400 text-[11px]">${tanggalInput}</span>`;
-}
+            const selisihWaktu = hariIni - tglTx;
+            const selisihHari = Math.floor(selisihWaktu / (1000 * 60 * 60 * 24));
 
-function getBadgeHemat(streakHari) {
-    if (streakHari >= 7) {
-        return `<span class="block text-yellow-400 text-xs mt-1 font-bold tracking-widest"><i class="fas fa-crown"></i> GOD TIER</span>`;
-    } else if (streakHari >= 4) {
-        return `<span class="block text-gray-300 text-xs mt-1 font-bold tracking-widest"><i class="fas fa-medal"></i> SILVER</span>`;
-    } else if (streakHari >= 1) {
-        return `<span class="block text-orange-400 text-xs mt-1 font-bold tracking-widest"><i class="fas fa-award"></i> BRONZE</span>`;
-    } else {
-        return `<span class="block text-red-500 text-xs mt-1 font-bold tracking-widest"><i class="fas fa-skull-crossbones"></i> WASPADA</span>`;
-    }
-}
+            if (selisihHari === 0) {
+                return '<span class="text-green-400 font-bold text-[11px]">Hari Ini</span>';
+            } else if (selisihHari === 1) {
+                return '<span class="text-blue-400 font-bold text-[11px]">Kemarin</span>';
+            } else if (selisihHari > 1 && selisihHari <= 7) {
+                return `<span class="text-gray-300 text-[11px]">${selisihHari} Hari yang lalu</span>`;
+            }
 
-window.updateFilterDashboard = () => {
-    // 1. Ambil nilai filter yang dipilih
-    const filterValue = document.getElementById('filter-waktu').value;
-    const now = new Date();
-    const yearNow = now.getFullYear();
-    const monthNow = now.getMonth();
-
-    // 2. Siapkan keranjang data sementara
-    let filteredTx = state.transactions;
-
-    // 3. Saring data berdasarkan waktu
-    if (filterValue === 'bulan_ini') {
-        filteredTx = state.transactions.filter(tx => {
-            const txDate = new Date(tx.date);
-            return txDate.getFullYear() === yearNow && txDate.getMonth() === monthNow;
-        });
-    } else if (filterValue === 'minggu_ini') {
-        const tujuhHariLalu = new Date();
-        tujuhHariLalu.setDate(now.getDate() - 7);
-        tujuhHariLalu.setHours(0,0,0,0);
-        
-        filteredTx = state.transactions.filter(tx => {
-            const txDate = new Date(tx.date);
-            return txDate >= tujuhHariLalu && txDate <= now;
-        });
-    }
-
-    // 4. Hitung ulang uangnya
-    let totalMasuk = 0;
-    let totalKeluar = 0;
-
-    filteredTx.forEach(tx => {
-        if (tx.type === 'income') {
-            totalMasuk += tx.amount;
-        } else {
-            totalKeluar += tx.amount;
+            return `<span class="text-gray-400 text-[11px]">${tanggalInput}</span>`;
         }
-    });
 
-    const sisaSaldo = totalMasuk - totalKeluar;
+        function getBadgeHemat(streakHari) {
+            if (streakHari >= 7) {
+                return `<span class="block text-yellow-400 text-xs mt-1 font-bold tracking-widest"><i class="fas fa-crown"></i> GOD TIER</span>`;
+            } else if (streakHari >= 4) {
+                return `<span class="block text-gray-300 text-xs mt-1 font-bold tracking-widest"><i class="fas fa-medal"></i> SILVER</span>`;
+            } else if (streakHari >= 1) {
+                return `<span class="block text-orange-400 text-xs mt-1 font-bold tracking-widest"><i class="fas fa-award"></i> BRONZE</span>`;
+            } else {
+                return `<span class="block text-red-500 text-xs mt-1 font-bold tracking-widest"><i class="fas fa-skull-crossbones"></i> WASPADA</span>`;
+            }
+        }
 
-    // 5. Tampilkan ke layar (Kartu Dashboard)
-    document.getElementById('lbl-saldo').innerText = formatRupiah(sisaSaldo);
-    document.getElementById('lbl-masuk').innerText = formatRupiah(totalMasuk);
-    document.getElementById('lbl-keluar').innerText = formatRupiah(totalKeluar);
-};
+        window.updateFilterDashboard = () => {
+            // 1. Ambil nilai filter yang dipilih
+            const filterValue = document.getElementById('filter-waktu').value;
+            const now = new Date();
+            const yearNow = now.getFullYear();
+            const monthNow = now.getMonth();
+
+            // 2. Siapkan keranjang data sementara
+            let filteredTx = state.transactions;
+
+            // 3. Saring data berdasarkan waktu
+            if (filterValue === 'bulan_ini') {
+                filteredTx = state.transactions.filter(tx => {
+                    const txDate = new Date(tx.date);
+                    return txDate.getFullYear() === yearNow && txDate.getMonth() === monthNow;
+                });
+            } else if (filterValue === 'minggu_ini') {
+                const tujuhHariLalu = new Date();
+                tujuhHariLalu.setDate(now.getDate() - 7);
+                tujuhHariLalu.setHours(0, 0, 0, 0);
+
+                filteredTx = state.transactions.filter(tx => {
+                    const txDate = new Date(tx.date);
+                    return txDate >= tujuhHariLalu && txDate <= now;
+                });
+            }
+
+            // 4. Hitung ulang uangnya
+            let totalMasuk = 0;
+            let totalKeluar = 0;
+
+            filteredTx.forEach(tx => {
+                if (tx.type === 'income') {
+                    totalMasuk += tx.amount;
+                } else {
+                    totalKeluar += tx.amount;
+                }
+            });
+
+            const sisaSaldo = totalMasuk - totalKeluar;
+
+            // 5. Tampilkan ke layar (Kartu Dashboard)
+            document.getElementById('lbl-saldo').innerText = formatRupiah(sisaSaldo);
+            document.getElementById('lbl-masuk').innerText = formatRupiah(totalMasuk);
+            document.getElementById('lbl-keluar').innerText = formatRupiah(totalKeluar);
+        };
         window.exportData = (type) => {
             const stats = calculateStats();
-            if(type === 'json') {
+            if (type === 'json') {
                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
                 const dlAnchorElem = document.createElement('a');
-                dlAnchorElem.setAttribute("href",     dataStr     );
+                dlAnchorElem.setAttribute("href", dataStr);
                 dlAnchorElem.setAttribute("download", "keuangan_ekstrem.json");
                 dlAnchorElem.click();
-            } 
+            }
             else if (type === 'excel') {
                 const ws = XLSX.utils.json_to_sheet(state.transactions.map(t => ({
                     Tanggal: t.date,
@@ -771,7 +772,7 @@ window.updateFilterDashboard = () => {
             else if (type === 'pdf') {
                 const element = document.getElementById('pdf-content');
                 element.classList.remove('hidden');
-                
+
                 element.innerHTML = `
                     <div class="p-8 text-white bg-slate-900">
                         <h1 class="text-2xl font-bold text-center mb-6">Laporan Sistem Keuangan Ekstrem</h1>
@@ -808,7 +809,7 @@ window.updateFilterDashboard = () => {
                                     <tr>
                                         <td class="border border-gray-400 p-2">${formatWaktuRelatif(t.date)}</td>
                                         <td class="border border-gray-400 p-2">${t.category}</td>
-                                        <td class="border border-gray-400 p-2 text-right">${t.type==='income'?'+':'-'}${formatRupiah(t.amount)}</td>
+                                        <td class="border border-gray-400 p-2 text-right">${t.type === 'income' ? '+' : '-'}${formatRupiah(t.amount)}</td>
                                         <td class="border border-gray-400 p-2">${t.note}</td>
                                     </tr>
                                 `).join('')}
@@ -832,7 +833,7 @@ window.updateFilterDashboard = () => {
         window.onload = () => {
             document.getElementById('tx-date').valueAsDate = new Date();
             document.getElementById('tx-type').addEventListener('change', populateCategories);
-            
+
             ['sim-jajan', 'sim-kopi', 'sim-rokok'].forEach(id => {
                 document.getElementById(id).addEventListener('input', updateSimulator);
             });
@@ -840,43 +841,69 @@ window.updateFilterDashboard = () => {
             populateCategories();
             initFirebase();
         };
-// Mengaktifkan PWA
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').then(() => console.log('Aplikasi UNIKY siap di-install!'));
-}
-// Fitur Sensor Saldo
-window.saldoVisible = true;
-window.toggleSaldo = () => {
-    const elSaldo = document.getElementById('lbl-saldo');
-    const elEye = document.getElementById('eye-icon');
-    
-    if (window.saldoVisible) {
-        // Simpan angka asli sembunyi-sembunyi sebelum disensor
-        if (elSaldo.innerText !== 'Rp ••••••••') {
-            elSaldo.setAttribute('data-asli', elSaldo.innerText);
+        // Mengaktifkan PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(() => console.log('Aplikasi UNIKY siap di-install!'));
         }
-        elSaldo.innerText = 'Rp ••••••••';
-        elEye.className = 'fas fa-eye-slash text-red-400'; // Ikon mata tertutup warna merah
-        window.saldoVisible = false;
-    } else {
-        // Kembalikan angka aslinya
-        elSaldo.innerText = elSaldo.getAttribute('data-asli') || 'Rp 0';
-        elEye.className = 'fas fa-eye text-emerald-400'; // Ikon mata terbuka warna hijau
+        // Fitur Sensor Saldo
         window.saldoVisible = true;
-    }
-};
-// Fitur Haptic Feedback (Getar Premium) otomatis untuk semua tombol
-document.querySelectorAll('button, .nav-btn').forEach(tombol => {
-    tombol.addEventListener('click', () => {
-        if (navigator.vibrate) navigator.vibrate(40); 
-    });
-});
+        window.toggleSaldo = () => {
+            const elSaldo = document.getElementById('lbl-saldo');
+            const elEye = document.getElementById('eye-icon');
+
+            if (window.saldoVisible) {
+                // Simpan angka asli sembunyi-sembunyi sebelum disensor
+                if (elSaldo.innerText !== 'Rp ••••••••') {
+                    elSaldo.setAttribute('data-asli', elSaldo.innerText);
+                }
+                elSaldo.innerText = 'Rp ••••••••';
+                elEye.className = 'fas fa-eye-slash text-red-400'; // Ikon mata tertutup warna merah
+                window.saldoVisible = false;
+            } else {
+                // Kembalikan angka aslinya
+                elSaldo.innerText = elSaldo.getAttribute('data-asli') || 'Rp 0';
+                elEye.className = 'fas fa-eye text-emerald-400'; // Ikon mata terbuka warna hijau
+                window.saldoVisible = true;
+            }
+        };
+        // Fitur Haptic Feedback (Getar Premium) otomatis untuk semua tombol
+        document.querySelectorAll('button, .nav-btn').forEach(tombol => {
+            tombol.addEventListener('click', () => {
+                if (navigator.vibrate) navigator.vibrate(40);
+            });
+        });
+        // Fitur Mata untuk Password Login
+        window.togglePassword = () => {
+            const inputPass = document.getElementById('auth-password'); // ID sudah disesuaikan
+            const iconMata = document.getElementById('eye-icon-login');
+
+            if (inputPass.type === 'password') {
+                inputPass.type = 'text';
+                iconMata.className = 'fas fa-eye-slash text-blue-400';
+            } else {
+                inputPass.type = 'password';
+                iconMata.className = 'fas fa-eye text-gray-400';
+            }
+        };
     </script>
     <style>
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1f2937; }
-        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+
         .glass-card {
             background: rgba(31, 41, 55, 0.6);
             backdrop-filter: blur(12px);
@@ -884,44 +911,55 @@ document.querySelectorAll('button, .nav-btn').forEach(tombol => {
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
     </style>
-<style>
-    /* Mengubah background utama */
-    body { background-color: #0f172a !important; color: white !important; }
-    
-    /* Mengubah kartu-kartu statistik */
-    /* Kita menargetkan class 'border' yang dipakai di JS lamamu */
-    .border { 
-        background-color: #1e293b !important; 
-        border: 1px solid #334155 !important; 
-        border-radius: 1rem !important; 
-        padding: 1.5rem !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
-    
-    /* Memperbaiki warna teks agar kontras dengan background gelap */
-    .text-black { color: white !important; }
-    
-    /* Menambahkan efek smooth */
-    .border:hover { border-color: #3b82f6 !important; transition: 0.3s; }
-    /* Efek transisi kelas atas ala startup fintech */
-    .animasi-masuk {
-        animation: slideMasuk 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    
-    @keyframes slideMasuk {
-        0% { 
-            opacity: 0; 
-            transform: translateY(20px); 
+    <style>
+        /* Mengubah background utama */
+        body {
+            background-color: #0f172a !important;
+            color: white !important;
         }
-        100% { 
-            opacity: 1; 
-            transform: translateY(0); 
+
+        /* Mengubah kartu-kartu statistik */
+        /* Kita menargetkan class 'border' yang dipakai di JS lamamu */
+        .border {
+            background-color: #1e293b !important;
+            border: 1px solid #334155 !important;
+            border-radius: 1rem !important;
+            padding: 1.5rem !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-    }
-</style>
-<link rel="manifest" href="manifest.json">
+
+        /* Memperbaiki warna teks agar kontras dengan background gelap */
+        .text-black {
+            color: white !important;
+        }
+
+        /* Menambahkan efek smooth */
+        .border:hover {
+            border-color: #3b82f6 !important;
+            transition: 0.3s;
+        }
+
+        /* Efek transisi kelas atas ala startup fintech */
+        .animasi-masuk {
+            animation: slideMasuk 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideMasuk {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#111827">
 </head>
+
 <body class="bg-gray-900 text-gray-100 font-sans min-h-screen transition-colors duration-500 pb-20 md:pb-0">
 
     <div id="loading-overlay" class="fixed inset-0 bg-gray-900 z-50 flex flex-col items-center justify-center">
@@ -930,76 +968,109 @@ document.querySelectorAll('button, .nav-btn').forEach(tombol => {
     </div>
 
     <div id="auth-screen" class="fixed inset-0 bg-gray-950 flex items-center justify-center p-4 z-40">
-        <div class="w-full max-w-md glass-card p-6 rounded-2xl shadow-2xl border border-gray-800">
+        <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+            <div
+                class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] animate-pulse">
+            </div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-emerald-500/30 rounded-full blur-[120px] animate-pulse"
+                style="animation-delay: 2s;"></div>
+        </div>
+        <div class="w-full max-w-md glass-card p-6 rounded-2xl shadow-2xl border border-gray-800 relative z-10">
             <div class="text-center mb-6">
-                <i class="fas fa-lock text-4xl text-blue-500 mb-2"></i>
+                <img src="logo.png" alt="Logo UNIKY"
+                    class="w-20 h-20 mx-auto mb-4 object-contain drop-shadow-[0_0_15px_rgba(255,215,0,0.4)]"
+                    style="mix-blend-mode: screen;">
                 <h1 class="text-2xl font-black text-white">Akses Akun Aman</h1>
                 <p class="text-sm text-gray-400 mt-1">Sistem Keuangan Ekstrem - Multi Perangkat</p>
             </div>
-            
+
             <form onsubmit="window.handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Email</label>
-                    <input type="email" id="auth-email" required placeholder="nama@email.com" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                    <input type="email" id="auth-email" required placeholder="nama@email.com"
+                        class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Password</label>
-                    <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                    <div class="relative">
+                        <input type="password" id="auth-password" required placeholder="••••••••"
+                            class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 pr-12 text-white focus:border-blue-500 focus:outline-none transition-colors">
+                        <button type="button" onclick="togglePassword()"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-400 transition-colors focus:outline-none">
+                            <i id="eye-icon-login" class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
-                
+
                 <div class="pt-2 grid grid-cols-2 gap-3">
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition shadow-lg">
+                    <button type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition shadow-lg">
                         <i class="fas fa-sign-in-alt mr-1"></i> Masuk
                     </button>
-                    <button type="button" onclick="window.handleRegister()" class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-xl transition border border-gray-700">
+                    <button type="button" onclick="window.handleRegister()"
+                        class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-xl transition border border-gray-700">
                         <i class="fas fa-user-plus mr-1"></i> Daftar Baru
                     </button>
                 </div>
             </form>
-            <div class="mt-6 text-center text-[11px] text-gray-500 bg-gray-900/50 p-2 rounded-lg border border-gray-800">
-                💡 <span class="font-semibold">PENTING:</span> Gunakan email aktif agar akun Anda tersambung sempurna antara HP, Laptop, dan Tablet Anda secara real-time.
+            <div
+                class="mt-6 text-center text-[11px] text-gray-500 bg-gray-900/50 p-2 rounded-lg border border-gray-800">
+                💡 <span class="font-semibold">PENTING:</span> Gunakan email aktif agar akun Anda tersambung sempurna
+                antara HP, Laptop, dan Tablet Anda secara real-time.
             </div>
         </div>
     </div>
 
     <div id="main-app" class="hidden">
-        <div id="anti-boros-warning" class="hidden bg-red-600 text-white p-3 text-center font-bold sticky top-0 z-40 shadow-lg shadow-red-900/50">
+        <div id="anti-boros-warning"
+            class="hidden bg-red-600 text-white p-3 text-center font-bold sticky top-0 z-40 shadow-lg shadow-red-900/50">
             <i class="fas fa-exclamation-triangle animate-bounce-slow inline-block"></i>
             <span id="anti-boros-text">Peringatan: Pengeluaran naik!</span>
         </div>
 
         <div class="max-w-5xl mx-auto p-4 md:p-6 md:flex md:gap-6 mt-4">
-            
-            <nav class="md:w-64 shrink-0 fixed bottom-0 left-0 right-0 bg-gray-800 md:bg-transparent md:static border-t border-gray-700 md:border-none z-30 flex md:flex-col justify-around md:justify-start p-2 md:p-0 md:space-y-4">
-                
+
+            <nav
+                class="md:w-64 shrink-0 fixed bottom-0 left-0 right-0 bg-gray-800 md:bg-transparent md:static border-t border-gray-700 md:border-none z-30 flex md:flex-col justify-around md:justify-start p-2 md:p-0 md:space-y-4">
+
                 <div class="hidden md:block mb-6 text-center glass-card p-4 rounded-2xl">
-                    <img src="logo.png" alt="Logo UNIKY" class="w-20 h-20 object-contain mx-auto mb-2" style="mix-blend-mode: screen;">
-                    <h1 class="font-black text-xl text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">UNIKY</h1>
-                    <p class="text-[10px] text-gray-400 uppercase tracking-widest mt-1" id="user-email-display">user@email.com</p>
+                    <img src="logo.png" alt="Logo UNIKY" class="w-20 h-20 object-contain mx-auto mb-2"
+                        style="mix-blend-mode: screen;">
+                    <h1
+                        class="font-black text-xl text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
+                        UNIKY</h1>
+                    <p class="text-[10px] text-gray-400 uppercase tracking-widest mt-1" id="user-email-display">
+                        user@email.com</p>
                 </div>
 
-                <button id="nav-dashboard" onclick="switchTab('dashboard')" class="nav-btn w-full flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-blue-400 border-b-2 border-blue-400 md:border-none md:bg-gray-800">
+                <button id="nav-dashboard" onclick="switchTab('dashboard')"
+                    class="nav-btn w-full flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-blue-400 border-b-2 border-blue-400 md:border-none md:bg-gray-800">
                     <i class="fas fa-home text-xl"></i>
                     <span class="text-xs md:text-base font-bold">Dashboard</span>
                 </button>
-                <button id="nav-input" onclick="switchTab('input')" class="nav-btn w-full flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-gray-400">
+                <button id="nav-input" onclick="switchTab('input')"
+                    class="nav-btn w-full flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-gray-400">
                     <i class="fas fa-plus-circle text-xl"></i>
                     <span class="text-xs md:text-base font-bold">Input Data</span>
                 </button>
-                <button id="nav-target" onclick="switchTab('target')" class="nav-btn w-full flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-gray-400">
+                <button id="nav-target" onclick="switchTab('target')"
+                    class="nav-btn w-full flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-gray-400">
                     <i class="fas fa-bullseye text-xl"></i>
                     <span class="text-xs md:text-base font-bold">Target</span>
                 </button>
-                <button id="nav-laporan" onclick="switchTab('laporan')" class="nav-btn w-full flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-gray-400">
+                <button id="nav-laporan" onclick="switchTab('laporan')"
+                    class="nav-btn w-full flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-gray-400">
                     <i class="fas fa-chart-pie text-xl"></i>
                     <span class="text-xs md:text-base font-bold">Laporan</span>
                 </button>
-                <button id="nav-simulasi" onclick="switchTab('simulasi')" class="nav-btn w-full flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-gray-400">
+                <button id="nav-simulasi" onclick="switchTab('simulasi')"
+                    class="nav-btn w-full flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-gray-400">
                     <i class="fas fa-magic text-xl"></i>
                     <span class="text-xs md:text-base font-bold">Simulasi</span>
                 </button>
-                
-                <button onclick="window.handleLogout()" class="w-full flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-red-950/40 text-red-400 transition mt-auto">
+
+                <button onclick="window.handleLogout()"
+                    class="w-full flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-red-950/40 text-red-400 transition mt-auto">
                     <i class="fas fa-sign-out-alt text-xl"></i>
                     <span class="text-xs md:text-base font-bold">Keluar Akun</span>
                 </button>
@@ -1008,78 +1079,111 @@ document.querySelectorAll('button, .nav-btn').forEach(tombol => {
             <main class="flex-1 space-y-6">
 
                 <div id="view-dashboard" class="tab-content space-y-6 animasi-masuk">
-                    <div class="glass-card rounded-2xl p-6 text-center border-l-4 border-l-yellow-400 shadow-lg relative overflow-hidden">
-                        <div class="absolute -right-10 -top-10 text-yellow-400/10 text-9xl"><i class="fas fa-quote-right"></i></div>
-                        <p id="motivation-text" class="text-lg md:text-xl font-medium italic text-yellow-100 relative z-10">
+                    <div
+                        class="glass-card rounded-2xl p-6 text-center border-l-4 border-l-yellow-400 shadow-lg relative overflow-hidden">
+                        <div class="absolute -right-10 -top-10 text-yellow-400/10 text-9xl"><i
+                                class="fas fa-quote-right"></i></div>
+                        <p id="motivation-text"
+                            class="text-lg md:text-xl font-medium italic text-yellow-100 relative z-10">
                             "Memuat motivasi..."
                         </p>
                     </div>
 
-                    <div class="bg-blue-900/30 border border-blue-500/30 rounded-xl p-3 text-sm flex items-center justify-center gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
-    <span class="text-gray-400 text-xs uppercase tracking-wider">PRIORITAS:</span>
-    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/30 h-fit">1. Wajib</span> <i class="fas fa-chevron-right text-gray-600 text-xs"></i>
-    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 h-fit">2. Hutang / Darurat</span> <i class="fas fa-chevron-right text-gray-600 text-xs"></i>
-    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-green-500/10 text-green-400 border border-green-500/30 h-fit">3. Nikah</span> <i class="fas fa-chevron-right text-gray-600 text-xs"></i>
-    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-500/10 text-red-400 border border-red-500/30 whitespace-nowrap h-fit">4. Uang Bebas</span>
-</div>
-<div class="flex justify-between items-center bg-gray-800/50 p-3 rounded-xl border border-gray-700 mt-2 mb-2">
-    <span class="text-sm font-bold text-gray-300"><i class="fas fa-calendar-alt mr-2 text-blue-400"></i>Filter Laporan:</span>
-    <select id="filter-waktu" onchange="window.updateFilterDashboard()" class="bg-gray-900 border border-gray-600 text-gray-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-1.5 outline-none cursor-pointer">
-        <option value="semua">Semua Waktu</option>
-        <option value="bulan_ini">Bulan Ini</option>
-        <option value="minggu_ini">7 Hari Terakhir</option>
-    </select>
-</div>
+                    <div
+                        class="bg-blue-900/30 border border-blue-500/30 rounded-xl p-3 text-sm flex items-center justify-center gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
+                        <span class="text-gray-400 text-xs uppercase tracking-wider">PRIORITAS:</span>
+                        <span
+                            class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/30 h-fit">1.
+                            Wajib</span> <i class="fas fa-chevron-right text-gray-600 text-xs"></i>
+                        <span
+                            class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 h-fit">2.
+                            Hutang / Darurat</span> <i class="fas fa-chevron-right text-gray-600 text-xs"></i>
+                        <span
+                            class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-green-500/10 text-green-400 border border-green-500/30 h-fit">3.
+                            Nikah</span> <i class="fas fa-chevron-right text-gray-600 text-xs"></i>
+                        <span
+                            class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-500/10 text-red-400 border border-red-500/30 whitespace-nowrap h-fit">4.
+                            Uang Bebas</span>
+                    </div>
+                    <div
+                        class="flex justify-between items-center bg-gray-800/50 p-3 rounded-xl border border-gray-700 mt-2 mb-2">
+                        <span class="text-sm font-bold text-gray-300"><i
+                                class="fas fa-calendar-alt mr-2 text-blue-400"></i>Filter Laporan:</span>
+                        <select id="filter-waktu" onchange="window.updateFilterDashboard()"
+                            class="bg-gray-900 border border-gray-600 text-gray-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-1.5 outline-none cursor-pointer">
+                            <option value="semua">Semua Waktu</option>
+                            <option value="bulan_ini">Bulan Ini</option>
+                            <option value="minggu_ini">7 Hari Terakhir</option>
+                        </select>
+                    </div>
 
-<div class="grid grid-cols-2 2xl:grid-cols-4 gap-4 mt-4">
-    <div class="glass-card p-4 rounded-2xl border-t-2 border-t-emerald-400 overflow-hidden">
-        <p class="text-gray-400 text-[10px] md:text-xs mb-1 uppercase font-bold truncate"><i class="fas fa-wallet mr-1"></i> Total Saldo</p>
-        <div class="flex justify-between items-center mt-1">
-    <p id="lbl-saldo" class="text-lg lg:text-xl xl:text-2xl font-black text-white truncate">Rp 0</p>
-    <button onclick="toggleSaldo()" class="text-gray-400 hover:text-emerald-400 transition-colors focus:outline-none">
-        <i id="eye-icon" class="fas fa-eye"></i>
-    </button>
-</div>
-    </div>
-    <div class="glass-card p-4 rounded-2xl border-t-2 border-t-blue-400 overflow-hidden">
-        <p class="text-gray-400 text-[10px] md:text-xs mb-1 uppercase font-bold truncate"><i class="fas fa-arrow-down mr-1"></i> Masuk</p>
-        <p id="lbl-masuk" class="text-lg lg:text-xl xl:text-2xl font-black text-blue-400 truncate">Rp 0</p>
-    </div>
-    <div class="glass-card p-4 rounded-2xl border-t-2 border-t-red-400 overflow-hidden">
-        <p class="text-gray-400 text-[10px] md:text-xs mb-1 uppercase font-bold truncate"><i class="fas fa-arrow-up mr-1"></i> Keluar</p>
-        <p id="lbl-keluar" class="text-lg lg:text-xl xl:text-2xl font-black text-red-400 truncate">Rp 0</p>
-    </div>
-    <div class="glass-card p-4 rounded-2xl border-t-2 border-t-yellow-400 relative overflow-hidden bg-gradient-to-br from-gray-800 to-yellow-900/40">
-        <p class="text-gray-300 text-[10px] md:text-xs mb-1 uppercase font-bold truncate"><i class="fas fa-unlock-alt mr-1"></i> Sisa Pakai</p>
-        <p id="lbl-sisa" class="text-lg lg:text-xl xl:text-2xl font-black text-yellow-300 truncate">Rp 0</p>
-    </div>
-</div>
+                    <div class="grid grid-cols-2 2xl:grid-cols-4 gap-4 mt-4">
+                        <div class="glass-card p-4 rounded-2xl border-t-2 border-t-emerald-400 overflow-hidden">
+                            <p class="text-gray-400 text-[10px] md:text-xs mb-1 uppercase font-bold truncate"><i
+                                    class="fas fa-wallet mr-1"></i> Total Saldo</p>
+                            <div class="flex justify-between items-center mt-1">
+                                <p id="lbl-saldo" class="text-lg lg:text-xl xl:text-2xl font-black text-white truncate">
+                                    Rp 0</p>
+                                <button onclick="toggleSaldo()"
+                                    class="text-gray-400 hover:text-emerald-400 transition-colors focus:outline-none">
+                                    <i id="eye-icon" class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="glass-card p-4 rounded-2xl border-t-2 border-t-blue-400 overflow-hidden">
+                            <p class="text-gray-400 text-[10px] md:text-xs mb-1 uppercase font-bold truncate"><i
+                                    class="fas fa-arrow-down mr-1"></i> Masuk</p>
+                            <p id="lbl-masuk" class="text-lg lg:text-xl xl:text-2xl font-black text-blue-400 truncate">
+                                Rp 0</p>
+                        </div>
+                        <div class="glass-card p-4 rounded-2xl border-t-2 border-t-red-400 overflow-hidden">
+                            <p class="text-gray-400 text-[10px] md:text-xs mb-1 uppercase font-bold truncate"><i
+                                    class="fas fa-arrow-up mr-1"></i> Keluar</p>
+                            <p id="lbl-keluar" class="text-lg lg:text-xl xl:text-2xl font-black text-red-400 truncate">
+                                Rp 0</p>
+                        </div>
+                        <div
+                            class="glass-card p-4 rounded-2xl border-t-2 border-t-yellow-400 relative overflow-hidden bg-gradient-to-br from-gray-800 to-yellow-900/40">
+                            <p class="text-gray-300 text-[10px] md:text-xs mb-1 uppercase font-bold truncate"><i
+                                    class="fas fa-unlock-alt mr-1"></i> Sisa Pakai</p>
+                            <p id="lbl-sisa" class="text-lg lg:text-xl xl:text-2xl font-black text-yellow-300 truncate">
+                                Rp 0</p>
+                        </div>
+                    </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="glass-card p-5 rounded-2xl">
                             <div class="flex justify-between items-end mb-2">
-                                <p class="text-gray-400 text-sm font-bold uppercase"><i class="fas fa-ring text-yellow-400"></i> Tabungan Nikah</p>
+                                <p class="text-gray-400 text-sm font-bold uppercase"><i
+                                        class="fas fa-ring text-yellow-400"></i> Tabungan Nikah</p>
                                 <p id="lbl-nikah-progress" class="text-2xl font-black text-yellow-400">0%</p>
                             </div>
-                            <div class="w-full bg-gray-700 rounded-full h-3 mb-2 overflow-hidden border border-gray-600">
-                                <div id="bar-nikah" class="bg-gradient-to-r from-yellow-500 to-yellow-300 h-3 rounded-full shadow-[0_0_10px_rgba(253,224,71,0.6)] transition-all duration-1000" style="width: 0%"></div>
+                            <div
+                                class="w-full bg-gray-700 rounded-full h-3 mb-2 overflow-hidden border border-gray-600">
+                                <div id="bar-nikah"
+                                    class="bg-gradient-to-r from-yellow-500 to-yellow-300 h-3 rounded-full shadow-[0_0_10px_rgba(253,224,71,0.6)] transition-all duration-1000"
+                                    style="width: 0%"></div>
                             </div>
                             <div class="flex justify-between text-xs font-bold text-gray-400">
                                 <span id="lbl-nikah-terkumpul">Rp 0</span>
                             </div>
                             <div class="mt-4 pt-4 border-t border-gray-700">
-                                <p id="nikah-countdown" class="text-sm font-medium text-gray-300 mb-1"><em>Target belum diatur</em></p>
+                                <p id="nikah-countdown" class="text-sm font-medium text-gray-300 mb-1"><em>Target belum
+                                        diatur</em></p>
                                 <p id="nikah-saran" class="text-xs"></p>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="glass-card p-4 rounded-2xl flex flex-col justify-center items-center text-center">
-                                <i class="fas fa-fire text-3xl text-orange-500 mb-2 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]"></i>
+                            <div
+                                class="glass-card p-4 rounded-2xl flex flex-col justify-center items-center text-center">
+                                <i
+                                    class="fas fa-fire text-3xl text-orange-500 mb-2 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]"></i>
                                 <p class="text-xs text-gray-400 font-bold uppercase">Streak Hemat</p>
                                 <p id="lbl-streak" class="text-xl font-black text-white mt-1">0 Hari</p>
                             </div>
-                            <div class="glass-card p-4 rounded-2xl flex flex-col justify-center items-center text-center border border-red-900/50 bg-red-900/10">
+                            <div
+                                class="glass-card p-4 rounded-2xl flex flex-col justify-center items-center text-center border border-red-900/50 bg-red-900/10">
                                 <i class="fas fa-skull-crossbones text-3xl text-red-500 mb-2 opacity-50"></i>
                                 <p class="text-xs text-gray-400 font-bold uppercase">Uang Terbuang</p>
                                 <p id="lbl-terbuang" class="text-lg font-black text-red-400 mt-1">Rp 0</p>
@@ -1090,8 +1194,10 @@ document.querySelectorAll('button, .nav-btn').forEach(tombol => {
 
                     <div class="glass-card p-5 rounded-2xl">
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold text-lg"><i class="fas fa-history text-gray-400"></i> Riwayat Terakhir</h3>
-                            <button onclick="switchTab('input')" class="text-sm text-blue-400 hover:text-blue-300">➕ Tambah Transaksi</button>
+                            <h3 class="font-bold text-lg"><i class="fas fa-history text-gray-400"></i> Riwayat Terakhir
+                            </h3>
+                            <button onclick="switchTab('input')" class="text-sm text-blue-400 hover:text-blue-300">➕
+                                Tambah Transaksi</button>
                         </div>
                         <div id="transaction-list" class="max-h-60 overflow-y-auto pr-2">
                         </div>
@@ -1100,36 +1206,45 @@ document.querySelectorAll('button, .nav-btn').forEach(tombol => {
 
                 <div id="view-input" class="tab-content hidden space-y-6 animasi-masuk">
                     <div class="glass-card p-6 rounded-2xl">
-                        <h2 class="text-2xl font-black mb-6 border-b border-gray-700 pb-2"><i class="fas fa-edit text-blue-400"></i> Catat Transaksi</h2>
-                        
+                        <h2 class="text-2xl font-black mb-6 border-b border-gray-700 pb-2"><i
+                                class="fas fa-edit text-blue-400"></i> Catat Transaksi</h2>
+
                         <form onsubmit="submitTransaction(event)" class="space-y-4">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Jenis</label>
-                                    <select id="tx-type" class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                                    <select id="tx-type"
+                                        class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
                                         <option value="expense">Pengeluaran</option>
                                         <option value="income">Pemasukan</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Nominal (Rp)</label>
-                                    <input type="number" id="tx-amount" required placeholder="0" class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white font-bold text-lg focus:outline-none focus:border-blue-500">
+                                    <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Nominal
+                                        (Rp)</label>
+                                    <input type="number" id="tx-amount" required placeholder="0"
+                                        class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white font-bold text-lg focus:outline-none focus:border-blue-500">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kategori</label>
-                                    <select id="tx-category" required class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                                    <select id="tx-category" required
+                                        class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Tanggal</label>
-                                    <input type="date" id="tx-date" required class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                                    <input type="date" id="tx-date" required
+                                        class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Catatan Tambahan</label>
-                                <input type="text" id="tx-note" placeholder="Contoh: Makan siang" class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                                <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Catatan
+                                    Tambahan</label>
+                                <input type="text" id="tx-note" placeholder="Contoh: Makan siang"
+                                    class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
                             </div>
-                            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-900/50 transition-all active:scale-95 uppercase tracking-widest mt-4">
+                            <button type="submit"
+                                class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-900/50 transition-all active:scale-95 uppercase tracking-widest mt-4">
                                 Simpan Data
                             </button>
                         </form>
@@ -1138,32 +1253,41 @@ document.querySelectorAll('button, .nav-btn').forEach(tombol => {
 
                 <div id="view-target" class="tab-content hidden space-y-6 animasi-masuk">
                     <div class="glass-card p-6 rounded-2xl border-t-4 border-t-yellow-400">
-                        <h2 class="text-2xl font-black mb-2 text-yellow-400"><i class="fas fa-ring"></i> Target Pernikahan</h2>
+                        <h2 class="text-2xl font-black mb-2 text-yellow-400"><i class="fas fa-ring"></i> Target
+                            Pernikahan</h2>
                         <p class="text-sm text-gray-400 mb-6">Tentukan kapan dan berapa biaya yang dibutuhkan.</p>
-                        
+
                         <form onsubmit="submitTargets(event)" class="space-y-4">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Tanggal Target Nikah</label>
-                                    <input type="date" id="target-nikah-date" class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-yellow-500">
+                                    <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Tanggal Target
+                                        Nikah</label>
+                                    <input type="date" id="target-nikah-date"
+                                        class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-yellow-500">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Total Biaya Dibutuhkan (Rp)</label>
-                                    <input type="number" id="target-nikah-amount" placeholder="Misal: 50000000" class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white font-bold focus:outline-none focus:border-yellow-500">
+                                    <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Total Biaya
+                                        Dibutuhkan (Rp)</label>
+                                    <input type="number" id="target-nikah-amount" placeholder="Misal: 50000000"
+                                        class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white font-bold focus:outline-none focus:border-yellow-500">
                                 </div>
                             </div>
-                            <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-yellow-900/50">Update Target Nikah</button>
+                            <button type="submit"
+                                class="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-yellow-900/50">Update
+                                Target Nikah</button>
                         </form>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="glass-card p-5 rounded-2xl">
-                            <h3 class="font-bold text-gray-300 mb-2"><i class="fas fa-briefcase-medical text-red-400"></i> Dana Darurat</h3>
+                            <h3 class="font-bold text-gray-300 mb-2"><i
+                                    class="fas fa-briefcase-medical text-red-400"></i> Dana Darurat</h3>
                             <p class="text-2xl font-black text-white" id="lbl-darurat-terkumpul">Rp 0</p>
                             <p class="text-xs text-gray-400 mt-1">Uang siap pakai untuk keadaan genting.</p>
                         </div>
                         <div class="glass-card p-5 rounded-2xl">
-                            <h3 class="font-bold text-gray-300 mb-2"><i class="fas fa-user-friends text-green-400"></i> Dana Orang Tua</h3>
+                            <h3 class="font-bold text-gray-300 mb-2"><i class="fas fa-user-friends text-green-400"></i>
+                                Dana Orang Tua</h3>
                             <p class="text-2xl font-black text-white" id="lbl-ortu-terkumpul">Rp 0</p>
                             <p class="text-xs text-gray-400 mt-1">Bakti kepada orang tua.</p>
                         </div>
@@ -1173,14 +1297,21 @@ document.querySelectorAll('button, .nav-btn').forEach(tombol => {
                 <div id="view-laporan" class="tab-content hidden space-y-6 animasi-masuk">
                     <div class="glass-card p-6 rounded-2xl">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                            <h2 class="text-2xl font-black"><i class="fas fa-chart-pie text-blue-400"></i> Analitik Pengeluaran</h2>
+                            <h2 class="text-2xl font-black"><i class="fas fa-chart-pie text-blue-400"></i> Analitik
+                                Pengeluaran</h2>
                             <div class="flex gap-2 w-full md:w-auto">
-                                <button onclick="exportData('excel')" class="flex-1 md:flex-none bg-green-700 hover:bg-green-600 text-white text-xs font-bold py-2 px-4 rounded transition"><i class="fas fa-file-excel mr-1"></i> Excel</button>
-                                <button onclick="exportData('pdf')" class="flex-1 md:flex-none bg-red-700 hover:bg-red-600 text-white text-xs font-bold py-2 px-4 rounded transition"><i class="fas fa-file-pdf mr-1"></i> PDF</button>
-                                <button onclick="exportData('json')" class="flex-1 md:flex-none bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold py-2 px-4 rounded transition"><i class="fas fa-file-code mr-1"></i> JSON</button>
+                                <button onclick="exportData('excel')"
+                                    class="flex-1 md:flex-none bg-green-700 hover:bg-green-600 text-white text-xs font-bold py-2 px-4 rounded transition"><i
+                                        class="fas fa-file-excel mr-1"></i> Excel</button>
+                                <button onclick="exportData('pdf')"
+                                    class="flex-1 md:flex-none bg-red-700 hover:bg-red-600 text-white text-xs font-bold py-2 px-4 rounded transition"><i
+                                        class="fas fa-file-pdf mr-1"></i> PDF</button>
+                                <button onclick="exportData('json')"
+                                    class="flex-1 md:flex-none bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold py-2 px-4 rounded transition"><i
+                                        class="fas fa-file-code mr-1"></i> JSON</button>
                             </div>
                         </div>
-                        
+
                         <div class="w-full md:w-2/3 mx-auto aspect-square md:aspect-video relative">
                             <canvas id="pieChart"></canvas>
                         </div>
@@ -1192,27 +1323,39 @@ document.querySelectorAll('button, .nav-btn').forEach(tombol => {
                         <div class="absolute top-0 right-0 p-4 opacity-10">
                             <i class="fas fa-magic text-9xl"></i>
                         </div>
-                        <h2 class="text-2xl font-black mb-2"><i class="fas fa-calculator text-blue-400"></i> Simulator Hemat</h2>
-                        <p class="text-sm text-gray-400 mb-6">Lihat apa yang terjadi jika kamu mengurangi pengeluaran harian ini.</p>
-                        
+                        <h2 class="text-2xl font-black mb-2"><i class="fas fa-calculator text-blue-400"></i> Simulator
+                            Hemat</h2>
+                        <p class="text-sm text-gray-400 mb-6">Lihat apa yang terjadi jika kamu mengurangi pengeluaran
+                            harian ini.</p>
+
                         <div class="space-y-4 relative z-10">
                             <div>
-                                <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi Jajan/Cemilan (Rp/Hari)</label>
-                                <input type="number" id="sim-jajan" value="20000" class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                                <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi
+                                    Jajan/Cemilan (Rp/Hari)</label>
+                                <input type="number" id="sim-jajan" value="20000"
+                                    class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi Kopi/Minuman Kekinian (Rp/Hari)</label>
-                                <input type="number" id="sim-kopi" value="15000" class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                                <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi Kopi/Minuman
+                                    Kekinian (Rp/Hari)</label>
+                                <input type="number" id="sim-kopi" value="15000"
+                                    class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi Rokok (Rp/Hari)</label>
-                                <input type="number" id="sim-rokok" value="0" class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                                <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi Rokok
+                                    (Rp/Hari)</label>
+                                <input type="number" id="sim-rokok" value="0"
+                                    class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
                             </div>
 
-                            <div class="mt-8 p-6 bg-gradient-to-br from-green-900/60 to-emerald-900/40 rounded-xl border border-green-500/30 text-center shadow-lg">
-                                <p class="text-gray-300 text-sm font-bold mb-2">Jika kamu konsisten, dalam 1 Tahun kamu akan memiliki tambahan:</p>
+                            <div
+                                class="mt-8 p-6 bg-gradient-to-br from-green-900/60 to-emerald-900/40 rounded-xl border border-green-500/30 text-center shadow-lg">
+                                <p class="text-gray-300 text-sm font-bold mb-2">Jika kamu konsisten, dalam 1 Tahun kamu
+                                    akan memiliki tambahan:</p>
                                 <p id="sim-result" class="text-4xl font-black text-green-400 mb-2">Rp 0</p>
-                                <p id="sim-days" class="text-sm text-yellow-400 font-bold bg-yellow-900/30 inline-block px-3 py-1 rounded"></p>
+                                <p id="sim-days"
+                                    class="text-sm text-yellow-400 font-bold bg-yellow-900/30 inline-block px-3 py-1 rounded">
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -1225,4 +1368,5 @@ document.querySelectorAll('button, .nav-btn').forEach(tombol => {
     <div id="pdf-content" class="hidden absolute top-0 left-0 w-[800px] z-[-1] bg-white text-black"></div>
 
 </body>
+
 </html>
