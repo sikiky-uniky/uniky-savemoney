@@ -1553,7 +1553,31 @@
     </div>
 
     <div id="pdf-content" class="hidden absolute top-0 left-0 w-[800px] z-[-1] bg-white text-black"></div>
+<script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const bottomNav = document.querySelector('nav');
+        // Deteksi semua kolom isian
+        const inputElements = document.querySelectorAll('input, select, textarea');
 
+        inputElements.forEach(el => {
+          // Saat kolom disentuh (keyboard muncul)
+          el.addEventListener('focus', () => {
+            if (window.innerWidth < 768) { // Hanya berlaku di layar HP
+              bottomNav.classList.add('hidden');
+            }
+          });
+          
+          // Saat selesai ngetik (keyboard hilang)
+          el.addEventListener('blur', () => {
+            if (window.innerWidth < 768) {
+              setTimeout(() => {
+                bottomNav.classList.remove('hidden');
+              }, 150); // Jeda 150ms biar mulus turunnya
+            }
+          });
+        });
+      });
+    </script>
 </body>
 
 </html>
