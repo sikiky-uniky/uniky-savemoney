@@ -478,7 +478,7 @@
                 let badgeType = '';
 
                 // Deteksi Pemasukan vs Brankas vs Pengeluaran Murni (Termasuk Ortu)
-                if (tx.type === 'Pemasukan' || tx.type === 'masuk' || tx.category.toUpperCase().includes('MASUK') || tx.category.toUpperCase().includes('PEMASUKAN') || tx.category.toUpperCase().includes('SAMPINGAN')) {
+                if (tx.type === 'Pemasukan' || tx.type === 'masuk' || tx.category.toUpperCase().includes('MASUK') || tx.category.toUpperCase().includes('PEMASUKAN') || tx.category.toUpperCase().includes('SAMPINGAN') || tx.category.toUpperCase().includes('GAJI') || tx.category.toUpperCase().includes('BONUS')) {
                     sign = '+';
                     colorAmount = 'text-emerald-500';
                 } else if (tx.category.includes('Nikah') || tx.category.includes('Dana Darurat') || tx.category.includes('Investasi')) {
