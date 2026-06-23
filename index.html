@@ -386,58 +386,58 @@
             });
 
             // --- MESIN ANIMASI FINAL (ANTI-TIDUR) ---
-    let nikahProgress = 0;
-    if (state.targets && state.targets.nikahAmount > 0) {
-        nikahProgress = (tabunganNikah / state.targets.nikahAmount) * 100;
-    }
-    
-    // 1. Update Teks Persentase
-    const lblProgress = document.getElementById('lbl-nikah-progress');
-    if (lblProgress) lblProgress.innerText = `${nikahProgress.toFixed(1)}%`;
-    
-    // 2. MESIN PENDORONG BAR NEON (ANTI-TIDUR SAAT PINDAH MENU)
-    const barNikah = document.getElementById('BAR-NEON-SAKTI');
-    if (barNikah) {
-        // 1. Matikan animasi sementara, teleportasi bar balik ke 0% secara instan
-        barNikah.style.transition = 'none';
-        barNikah.style.width = '0%';
-        
-        // 2. Tampar browser biar sadar posisi bar sudah di 0% (Reflow)
-        void barNikah.offsetWidth;
-        
-        // 3. Nyalakan lagi mesin animasinya, lalu tembak ke target!
-        setTimeout(() => {
-            barNikah.style.transition = 'width 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
-            barNikah.style.width = Math.min(nikahProgress, 100) + '%';
-        }, 50);
-    } else {
-        console.error("Gawat Mas! ID BAR-NEON-SAKTI tidak ditemukan!");
-    }
-    
-    // 3. MESIN ANGKA BERPUTAR (Auto-Reset)
-    const lblTerkumpul = document.getElementById('lbl-nikah-terkumpul-final');
-    if (lblTerkumpul) {
-        // Hapus sisa putaran sebelumnya
-        if (window.animasiNikahInterval) clearInterval(window.animasiNikahInterval);
-        
-        // Paksa teks balik ke Rp 0 setiap kali diklik
-        lblTerkumpul.innerText = 'Rp 0'; 
-        
-        let currentAngka = 0;
-        const targetAngka = tabunganNikah;
-        
-        if (targetAngka > 0) {
-            const step = targetAngka / 40; // Total 40 frame biar lebih halus
-            window.animasiNikahInterval = setInterval(() => {
-                currentAngka += step;
-                if (currentAngka >= targetAngka) {
-                    currentAngka = targetAngka;
-                    clearInterval(window.animasiNikahInterval);
+            let nikahProgress = 0;
+            if (state.targets && state.targets.nikahAmount > 0) {
+                nikahProgress = (tabunganNikah / state.targets.nikahAmount) * 100;
+            }
+
+            // 1. Update Teks Persentase
+            const lblProgress = document.getElementById('lbl-nikah-progress');
+            if (lblProgress) lblProgress.innerText = `${nikahProgress.toFixed(1)}%`;
+
+            // 2. MESIN PENDORONG BAR NEON (ANTI-TIDUR SAAT PINDAH MENU)
+            const barNikah = document.getElementById('BAR-NEON-SAKTI');
+            if (barNikah) {
+                // 1. Matikan animasi sementara, teleportasi bar balik ke 0% secara instan
+                barNikah.style.transition = 'none';
+                barNikah.style.width = '0%';
+
+                // 2. Tampar browser biar sadar posisi bar sudah di 0% (Reflow)
+                void barNikah.offsetWidth;
+
+                // 3. Nyalakan lagi mesin animasinya, lalu tembak ke target!
+                setTimeout(() => {
+                    barNikah.style.transition = 'width 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                    barNikah.style.width = Math.min(nikahProgress, 100) + '%';
+                }, 50);
+            } else {
+                console.error("Gawat Mas! ID BAR-NEON-SAKTI tidak ditemukan!");
+            }
+
+            // 3. MESIN ANGKA BERPUTAR (Auto-Reset)
+            const lblTerkumpul = document.getElementById('lbl-nikah-terkumpul-final');
+            if (lblTerkumpul) {
+                // Hapus sisa putaran sebelumnya
+                if (window.animasiNikahInterval) clearInterval(window.animasiNikahInterval);
+
+                // Paksa teks balik ke Rp 0 setiap kali diklik
+                lblTerkumpul.innerText = 'Rp 0';
+
+                let currentAngka = 0;
+                const targetAngka = tabunganNikah;
+
+                if (targetAngka > 0) {
+                    const step = targetAngka / 40; // Total 40 frame biar lebih halus
+                    window.animasiNikahInterval = setInterval(() => {
+                        currentAngka += step;
+                        if (currentAngka >= targetAngka) {
+                            currentAngka = targetAngka;
+                            clearInterval(window.animasiNikahInterval);
+                        }
+                        lblTerkumpul.innerText = 'Rp ' + Math.floor(currentAngka).toLocaleString('id-ID');
+                    }, 25);
                 }
-                lblTerkumpul.innerText = 'Rp ' + Math.floor(currentAngka).toLocaleString('id-ID');
-            }, 25); 
-        }
-    }
+            }
             // 4. Update Darurat & Ortu (TIDAK AKAN HILANG LAGI)
             const lblDarurat = document.getElementById('lbl-darurat-terkumpul');
             if (lblDarurat) lblDarurat.innerText = 'Rp ' + danaDarurat.toLocaleString('id-ID');
@@ -478,34 +478,34 @@
                 let badgeType = '';
 
                 // Deteksi Pemasukan vs Brankas vs Pengeluaran Murni (Termasuk Ortu)
-                if (tx.type === 'Pemasukan' || tx.category.includes('PEMASUKAN')) {
+                if (tx.type === 'Pemasukan' || tx.type === 'masuk' || tx.category.toUpperCase().includes('MASUK') || tx.category.toUpperCase().includes('PEMASUKAN') || tx.category.toUpperCase().includes('SAMPINGAN')) {
                     sign = '+';
                     colorAmount = 'text-emerald-500';
                 } else if (tx.category.includes('Nikah') || tx.category.includes('Dana Darurat') || tx.category.includes('Investasi')) {
-        // Ini Brankas! Uang aman.
-        sign = '🔒';
-        colorAmount = 'text-cyan-400 font-bold';
-        badgeType = `<span style="display: inline-block; padding: 2px 6px; height: max-content; line-height: 1.2; border-radius: 4px; font-size: 9px; font-weight: bold; background-color: rgba(6,182,212,0.1); color: #22d3ee; border: 1px solid rgba(6,182,212,0.3); margin-left: 8px; letter-spacing: 1px;">BRANKAS</span>`;
-    }
+                    // Ini Brankas! Uang aman.
+                    sign = '🔒';
+                    colorAmount = 'text-cyan-400 font-bold';
+                    badgeType = `<span style="display: inline-block; padding: 2px 6px; height: max-content; line-height: 1.2; border-radius: 4px; font-size: 9px; font-weight: bold; background-color: rgba(6,182,212,0.1); color: #22d3ee; border: 1px solid rgba(6,182,212,0.3); margin-left: 8px; letter-spacing: 1px;">BRANKAS</span>`;
+                }
 
-    // --- RADAR ANTI-BOCOR (DESTUVO DETECTOR) ---
-    let radarWarning = '';
-    const deskripsiUpper = (tx.note || '').toUpperCase();
-    const kategoriUpper = tx.category.toUpperCase();
+                // --- RADAR ANTI-BOCOR (DESTUVO DETECTOR) ---
+                let radarWarning = '';
+                const deskripsiUpper = (tx.note || '').toUpperCase();
+                const kategoriUpper = tx.category.toUpperCase();
 
-    if (deskripsiUpper.includes('DESTUVO') || kategoriUpper.includes('DESTUVO')) {
-        radarWarning = `<span style="display: inline-block; padding: 2px 6px; height: max-content; line-height: 1.2; border-radius: 4px; font-size: 9px; font-weight: bold; background-color: rgba(220,38,38,0.1); color: #ef4444; border: 1px solid rgba(220,38,38,0.3); margin-left: 8px; letter-spacing: 1px;">⚠️ TAGIHAN DESTUVO</span>`;
-    }
+                if (deskripsiUpper.includes('DESTUVO') || kategoriUpper.includes('DESTUVO')) {
+                    radarWarning = `<span style="display: inline-block; padding: 2px 6px; height: max-content; line-height: 1.2; border-radius: 4px; font-size: 9px; font-weight: bold; background-color: rgba(220,38,38,0.1); color: #ef4444; border: 1px solid rgba(220,38,38,0.3); margin-left: 8px; letter-spacing: 1px;">⚠️ TAGIHAN DESTUVO</span>`;
+                }
 
                 listEl.innerHTML += `
-        <div class="flex justify-between items-center bg-gray-800/50 p-3 rounded-xl border border-gray-700 mb-2 hover:bg-gray-700/50 transition-all duration-300">
+        <div class="flex flex-col md:flex-row md:items-center justify-between bg-gray-800/50 p-3 rounded-xl border border-gray-700 mb-2 hover:bg-gray-700/50 transition-all duration-300 gap-3 md:gap-0">
             <div>
-                <p class="flex items-center font-bold text-sm ${tx.type === 'Pemasukan' || tx.category.includes('PEMASUKAN') ? 'text-emerald-400' : 'text-gray-200'}">
+                <p class="flex items-center font-bold text-sm ${tx.type === 'Pemasukan' || tx.type === 'masuk' || tx.category.toUpperCase().includes('MASUK') || tx.category.toUpperCase().includes('PEMASUKAN') || tx.category.toUpperCase().includes('SAMPINGAN') ? 'text-emerald-400' : 'text-gray-100'}">
                     ${tx.category} ${badgeType} ${radarWarning}
                 </p>
                 <p class="text-xs text-gray-400 mt-0.5">${tx.date} | <span class="italic text-gray-500">${tx.note || '-'}</span></p>
             </div>
-            <div class="text-right flex items-center gap-4">
+            <div class="w-full md:w-auto flex justify-between md:justify-end items-center gap-4 shrink-0">
                 <p class="font-black ${colorAmount}">${sign} ${formatRupiah(amount)}</p>
                 <button onclick="deleteTransaction('${tx.id}')" class="text-[9px] uppercase tracking-widest font-bold bg-red-900/20 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/30 rounded-md px-2.5 py-1.5 transition-colors flex items-center">
     <i class="fas fa-trash-alt mr-1.5 text-xs"></i> MUSNAHKAN
@@ -596,37 +596,37 @@
 
         // --- INTERACTION LOGIC ---
         window.switchTab = (tabId) => {
-    // 1. Logika asli Mas untuk ganti menu (Sembunyikan semua, munculkan yang diklik)
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-    document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('text-blue-400', 'border-b-2', 'border-blue-400'));
+            // 1. Logika asli Mas untuk ganti menu (Sembunyikan semua, munculkan yang diklik)
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('text-blue-400', 'border-b-2', 'border-blue-400'));
 
-    document.getElementById(`view-${tabId}`).classList.remove('hidden');
-    const btn = document.getElementById(`nav-${tabId}`);
-    if (btn) btn.classList.add('text-blue-400', 'border-b-2', 'border-blue-400');
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+            const btn = document.getElementById(`nav-${tabId}`);
+            if (btn) btn.classList.add('text-blue-400', 'border-b-2', 'border-blue-400');
 
-    // 2. --- SUNTIKAN PEMBANGUN ANIMASI (KHUSUS DASHBOARD) ---
-    if (tabId === 'dashboard') {
-        // Kasih jeda 50ms biar layarnya beres muncul dulu, baru animasinya ditembak
-        setTimeout(() => {
-            
-            // A. Bangunkan Animasi Bar Neon & Angka Nikah
-            if (typeof updateTargets === 'function') {
-                updateTargets();
+            // 2. --- SUNTIKAN PEMBANGUN ANIMASI (KHUSUS DASHBOARD) ---
+            if (tabId === 'dashboard') {
+                // Kasih jeda 50ms biar layarnya beres muncul dulu, baru animasinya ditembak
+                setTimeout(() => {
+
+                    // A. Bangunkan Animasi Bar Neon & Angka Nikah
+                    if (typeof updateTargets === 'function') {
+                        updateTargets();
+                    }
+
+                    // B. Bangunkan Donut Chart (Chart.js)
+                    // Cek apakah Mas menyimpan chart-nya di window.myChart atau memanggil ulang render fungsinya
+                    if (window.myChart) {
+                        window.myChart.reset();
+                        window.myChart.update();
+                    } else if (typeof updateDashboard === 'function') {
+                        // Panggil ulang fungsi pembuat chart kalau chart-nya dibikin di dalam fungsi ini
+                        updateDashboard();
+                    }
+
+                }, 50);
             }
-            
-            // B. Bangunkan Donut Chart (Chart.js)
-            // Cek apakah Mas menyimpan chart-nya di window.myChart atau memanggil ulang render fungsinya
-            if (window.myChart) {
-                window.myChart.reset();
-                window.myChart.update();
-            } else if (typeof updateDashboard === 'function') {
-                // Panggil ulang fungsi pembuat chart kalau chart-nya dibikin di dalam fungsi ini
-                updateDashboard(); 
-            }
-
-        }, 50);
-    }
-};
+        };
 
         window.populateCategories = () => {
             const type = document.getElementById('tx-type').value;
@@ -1077,6 +1077,19 @@
                 transform: translateY(0);
             }
         }
+
+        /* JURUS MENGHILANGKAN SCROLLBAR TAPI TETAP BISA DI-SWIPE */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+            /* Chrome, Safari, Opera */
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            /* IE & Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
     </style>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#111827">
@@ -1152,8 +1165,7 @@
 
         <div class="max-w-5xl mx-auto p-4 md:p-6 md:flex md:gap-6 mt-4">
 
-            <nav
-                class="md:w-64 shrink-0 fixed bottom-0 left-0 right-0 bg-gray-800 md:bg-transparent md:static border-t border-gray-700 md:border-none z-30 flex md:flex-col justify-around md:justify-start p-2 md:p-0 md:space-y-4">
+            <nav class="md:w-64 shrink-0 fixed bottom-0 left-0 right-0 bg-gray-800 md:bg-transparent md:static border-t border-gray-700 md:border-none z-30 flex md:flex-col justify-start md:justify-start overflow-x-auto scrollbar-hide px-2 md:px-0 gap-2 md:gap-0">
 
                 <div class="hidden md:block mb-6 text-center glass-card p-4 rounded-2xl">
                     <img src="logo.png" alt="Logo UNIKY" class="w-20 h-20 object-contain mx-auto mb-2"
@@ -1166,33 +1178,33 @@
                 </div>
 
                 <button id="nav-dashboard" onclick="switchTab('dashboard')"
-                    class="nav-btn w-full flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-blue-400 border-b-2 border-blue-400 md:border-none md:bg-gray-800">
+                    class="nav-btn shrink-0 min-w-[64px] flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-blue-400 border-b-2 border-blue-400 md:border-none md:bg-gray-800">
                     <i class="fas fa-home text-xl"></i>
                     <span class="text-xs md:text-base font-bold">Dashboard</span>
                 </button>
                 <button id="nav-input" onclick="switchTab('input')"
-                    class="nav-btn w-full flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-gray-400">
+                    class="nav-btn shrink-0 min-w-[64px] flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-gray-400">
                     <i class="fas fa-plus-circle text-xl"></i>
                     <span class="text-xs md:text-base font-bold">Input Data</span>
                 </button>
                 <button id="nav-target" onclick="switchTab('target')"
-                    class="nav-btn w-full flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-gray-400">
+                    class="nav-btn shrink-0 min-w-[64px] flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-gray-400">
                     <i class="fas fa-bullseye text-xl"></i>
                     <span class="text-xs md:text-base font-bold">Target</span>
                 </button>
                 <button id="nav-laporan" onclick="switchTab('laporan')"
-                    class="nav-btn w-full flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-gray-400">
+                    class="nav-btn shrink-0 min-w-[64px] flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-gray-400">
                     <i class="fas fa-chart-pie text-xl"></i>
                     <span class="text-xs md:text-base font-bold">Laporan</span>
                 </button>
                 <button id="nav-simulasi" onclick="switchTab('simulasi')"
-                    class="nav-btn w-full flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-gray-400">
+                    class="nav-btn shrink-0 min-w-[64px] flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-gray-800 transition text-gray-400">
                     <i class="fas fa-magic text-xl"></i>
                     <span class="text-xs md:text-base font-bold">Simulasi</span>
                 </button>
 
                 <button onclick="window.handleLogout()"
-                    class="w-full flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-red-950/40 text-red-400 transition mt-auto">
+                    class="shrink-0 min-w-[64px] flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-3 rounded-xl hover:bg-red-950/40 text-red-400 transition mt-auto">
                     <i class="fas fa-sign-out-alt text-xl"></i>
                     <span class="text-xs md:text-base font-bold">Keluar Akun</span>
                 </button>
@@ -1211,32 +1223,44 @@
                         </p>
                     </div>
 
-                    <div class="bg-gray-800/40 border border-gray-700/50 rounded-lg flex items-center justify-center gap-2 mb-2" style="height: 50px !important; min-height: 50px !important; max-height: 50px !important; padding: 0 16px !important; overflow: hidden;">
-    <span class="text-gray-400 text-[10px] uppercase tracking-widest font-bold mr-1">PRIORITAS:</span>
-    
-    <span style="display: inline-block; padding: 2px 6px; height: max-content; line-height: 1.2; border-radius: 4px; font-size: 9px; font-weight: bold; background-color: rgba(96,165,250,0.1); color: #60a5fa; border: 1px solid rgba(96,165,250,0.3); letter-spacing: 1px;">1. WAJIB</span>
-    <i class="fas fa-chevron-right text-gray-600 text-[9px]"></i>
-    
-    <span style="display: inline-block; padding: 2px 6px; height: max-content; line-height: 1.2; border-radius: 4px; font-size: 9px; font-weight: bold; background-color: rgba(250,204,21,0.1); color: #facc15; border: 1px solid rgba(250,204,21,0.3); letter-spacing: 1px;">2. HUTANG / DARURAT</span>
-    <i class="fas fa-chevron-right text-gray-600 text-[9px]"></i>
-    
-    <span style="display: inline-block; padding: 2px 6px; height: max-content; line-height: 1.2; border-radius: 4px; font-size: 9px; font-weight: bold; background-color: rgba(52,211,153,0.1); color: #34d399; border: 1px solid rgba(52,211,153,0.3); letter-spacing: 1px;">3. NIKAH</span>
-    <i class="fas fa-chevron-right text-gray-600 text-[9px]"></i>
-    
-    <span style="display: inline-block; padding: 2px 6px; height: max-content; line-height: 1.2; border-radius: 4px; font-size: 9px; font-weight: bold; background-color: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.3); letter-spacing: 1px;">4. UANG BEBAS</span>
-</div>
+                    <div class="bg-gray-800/40 border border-gray-700/50 rounded-lg flex items-center justify-start md:justify-center gap-2 mb-2 overflow-x-auto whitespace-nowrap scrollbar-hide px-3"
+                        style="min-height: 50px !important;">
+                        <span
+                            class="text-gray-400 text-[10px] uppercase tracking-widest font-bold mr-1 shrink-0">PRIORITAS:</span>
 
-    <div class="flex justify-between items-center bg-gray-800/40 rounded-lg border border-gray-700/50 mb-4" style="height: 50px !important; min-height: 50px !important; max-height: 50px !important; padding: 0 16px !important; overflow: hidden;">
-    <span class="text-xs font-bold text-gray-400 tracking-wide">
-        <i class="fas fa-calendar-alt mr-1.5 text-gray-500"></i>Filter Laporan:
-    </span>
-    <select id="filter-waktu" onchange="window.updateFilterDashboard()" 
-        class="bg-gray-900 border border-gray-600 text-gray-200 text-xs rounded-md focus:ring-blue-500 outline-none cursor-pointer" style="height: 32px !important; padding: 0 10px !important;">
-        <option value="semua">Semua Waktu</option>
-        <option value="bulan_ini">Bulan Ini</option>
-        <option value="minggu_ini">7 Hari Terakhir</option>
-    </select>
-</div>
+                        <span
+                            style="display: inline-block; white-space: nowrap; padding: 2px 6px; height: max-content; line-height: 1.2; border-radius: 4px; font-size: 9px; font-weight: bold; background-color: rgba(96,165,250,0.1); color: #60a5fa; border: 1px solid rgba(96,165,250,0.3); letter-spacing: 1px;">1.
+                            WAJIB</span>
+                        <i class="fas fa-chevron-right text-gray-600 text-[9px] shrink-0"></i>
+
+                        <span
+                            style="display: inline-block; white-space: nowrap; padding: 2px 6px; height: max-content; line-height: 1.2; border-radius: 4px; font-size: 9px; font-weight: bold; background-color: rgba(250,204,21,0.1); color: #facc15; border: 1px solid rgba(250,204,21,0.3); letter-spacing: 1px;">2.
+                            HUTANG / DARURAT</span>
+                        <i class="fas fa-chevron-right text-gray-600 text-[9px] shrink-0"></i>
+
+                        <span
+                            style="display: inline-block; white-space: nowrap; padding: 2px 6px; height: max-content; line-height: 1.2; border-radius: 4px; font-size: 9px; font-weight: bold; background-color: rgba(52,211,153,0.1); color: #34d399; border: 1px solid rgba(52,211,153,0.3); letter-spacing: 1px;">3.
+                            NIKAH</span>
+                        <i class="fas fa-chevron-right text-gray-600 text-[9px] shrink-0"></i>
+
+                        <span
+                            style="display: inline-block; white-space: nowrap; padding: 2px 6px; height: max-content; line-height: 1.2; border-radius: 4px; font-size: 9px; font-weight: bold; background-color: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.3); letter-spacing: 1px;">4.
+                            UANG BEBAS</span>
+                    </div>
+
+                    <div class="flex justify-between items-center bg-gray-800/40 rounded-lg border border-gray-700/50 mb-4"
+                        style="height: 50px !important; min-height: 50px !important; max-height: 50px !important; padding: 0 16px !important; overflow: hidden;">
+                        <span class="text-xs font-bold text-gray-400 tracking-wide">
+                            <i class="fas fa-calendar-alt mr-1.5 text-gray-500"></i>Filter Laporan:
+                        </span>
+                        <select id="filter-waktu" onchange="window.updateFilterDashboard()"
+                            class="bg-gray-900 border border-gray-600 text-gray-200 text-xs rounded-md focus:ring-blue-500 outline-none cursor-pointer"
+                            style="height: 32px !important; padding: 0 10px !important;">
+                            <option value="semua">Semua Waktu</option>
+                            <option value="bulan_ini">Bulan Ini</option>
+                            <option value="minggu_ini">7 Hari Terakhir</option>
+                        </select>
+                    </div>
 
                     <div class="grid grid-cols-2 2xl:grid-cols-4 gap-4 mt-4">
                         <div class="glass-card p-4 rounded-2xl border-t-2 border-t-emerald-400 overflow-hidden">
@@ -1273,39 +1297,60 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="relative overflow-hidden rounded-2xl border border-gray-700/50 shadow-2xl p-5 mb-4 group h-full">
-    <div class="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" 
-         style="background-image: url('https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=1000&auto=format&fit=crop');"></div>
-    <div class="absolute inset-0 z-0 bg-gradient-to-t from-gray-950 via-gray-900/80 to-gray-900/40"></div>
-    
-    <div class="relative z-10 flex flex-col h-full justify-between min-h-[160px]">
-        
-        <div class="flex justify-between items-start mb-6">
-            <div>
-                <span style="display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 9px; font-weight: 900; background-color: rgba(0, 0, 0, 0.7); color: #34d399; border: 1px solid #059669; margin-bottom: 8px; letter-spacing: 1px; backdrop-filter: blur(4px);">TARGET PRIORITAS</span>
-                <h2 class="text-2xl font-black text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] leading-none tracking-tight">TABUNGAN NIKAH</h2>
-            </div>
-            <div id="lbl-nikah-progress" class="text-3xl font-black text-emerald-400 drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">0%</div>
-        </div>
+                        <div
+                            class="relative overflow-hidden rounded-2xl border border-gray-700/50 shadow-2xl p-5 mb-4 group h-full">
+                            <div class="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                                style="background-image: url('https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=1000&auto=format&fit=crop');">
+                            </div>
+                            <div
+                                class="absolute inset-0 z-0 bg-gradient-to-t from-gray-950 via-gray-900/80 to-gray-900/40">
+                            </div>
 
-        <div>
-            <div style="width: 100%; height: 14px; background-color: #111827; border-radius: 999px; overflow: hidden; border: 1px solid #374151; margin-bottom: 16px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);">
-    <div id="BAR-NEON-SAKTI" style="height: 100%; width: 50%; background: linear-gradient(90deg, #059669, #34d399); border-radius: 999px; transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);"></div>
-</div>
+                            <div class="relative z-10 flex flex-col h-full justify-between min-h-[160px]">
 
-            <div class="flex justify-between items-end">
-                <div>
-                    <p class="text-[10px] text-gray-300 uppercase font-bold tracking-wider mb-0.5">Terkumpul</p>
-                    <p id="lbl-nikah-terkumpul-final" class="text-xl font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Rp 0</p>
-                </div>
-                <div class="text-right">
-                    <p class="text-[10px] text-gray-300 uppercase font-bold tracking-wider mb-0.5">Sisa Waktu</p>
-                    <p id="nikah-countdown" class="text-sm font-bold text-gray-100">Target belum diatur</p>
-                </div>
-            </div>
-        </div>
-    </div>
- </div>                       <div class="grid grid-cols-2 gap-4">
+                                <div class="flex justify-between items-start mb-6">
+                                    <div>
+                                        <span
+                                            style="display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 9px; font-weight: 900; background-color: rgba(0, 0, 0, 0.7); color: #34d399; border: 1px solid #059669; margin-bottom: 8px; letter-spacing: 1px; backdrop-filter: blur(4px);">TARGET
+                                            PRIORITAS</span>
+                                        <h2
+                                            class="text-2xl font-black text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] leading-none tracking-tight">
+                                            TABUNGAN NIKAH</h2>
+                                    </div>
+                                    <div id="lbl-nikah-progress"
+                                        class="text-3xl font-black text-emerald-400 drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
+                                        0%</div>
+                                </div>
+
+                                <div>
+                                    <div
+                                        style="width: 100%; height: 14px; background-color: #111827; border-radius: 999px; overflow: hidden; border: 1px solid #374151; margin-bottom: 16px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);">
+                                        <div id="BAR-NEON-SAKTI"
+                                            style="height: 100%; width: 50%; background: linear-gradient(90deg, #059669, #34d399); border-radius: 999px; transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);">
+                                        </div>
+                                    </div>
+
+                                    <div class="flex justify-between items-end">
+                                        <div>
+                                            <p
+                                                class="text-[10px] text-gray-300 uppercase font-bold tracking-wider mb-0.5">
+                                                Terkumpul</p>
+                                            <p id="lbl-nikah-terkumpul-final"
+                                                class="text-xl font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                                                Rp 0</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p
+                                                class="text-[10px] text-gray-300 uppercase font-bold tracking-wider mb-0.5">
+                                                Sisa Waktu</p>
+                                            <p id="nikah-countdown" class="text-sm font-bold text-gray-100">Target belum
+                                                diatur</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
                             <div
                                 class="glass-card p-4 rounded-2xl flex flex-col justify-center items-center text-center">
                                 <i
