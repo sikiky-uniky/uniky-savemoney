@@ -476,30 +476,33 @@ window.ledakkanConfetti = () => {
             if (lblOrtu) lblOrtu.innerText = 'Rp ' + danaOrtu.toLocaleString('id-ID');
             // Menampilkan Target Darurat & Ortu dari Firebase ke layar
             if (state.targets) {
-                if (state.targets.danaDarurat) {
-                    const elDaruratTarget = document.getElementById('lbl-darurat-target');
-                    if (elDaruratTarget) elDaruratTarget.innerText = 'Rp ' + state.targets.danaDarurat.toLocaleString('id-ID');
-                    // --- PELATUK CONFETTI SULTAN (REVISI ANTI-CRASH) ---
-                try {
-                    if (typeof danaDarurat !== 'undefined' && state && state.targets && state.targets.danaDarurat) {
-                        // Cek apakah sudah pernah meledak di sesi ini
-                        if (danaDarurat > 0 && danaDarurat >= state.targets.danaDarurat && !sessionStorage.getItem('ledakan_darurat_selesai')) {
-                            window.ledakkanConfetti();
-                            // Kunci pelatuknya agar tidak meledak terus-menerus
-                            sessionStorage.setItem('ledakan_darurat_selesai', 'true');
+                    
+                    // --- Blok Dana Darurat ---
+                    if (state.targets.danaDarurat) {
+                        const elDaruratTarget = document.getElementById('lbl-darurat-target');
+                        if (elDaruratTarget) elDaruratTarget.innerText = 'Rp ' + state.targets.danaDarurat.toLocaleString('id-ID');
+                        
+                        // --- PELATUK CONFETTI SULTAN ---
+                        try {
+                            if (typeof danaDarurat !== 'undefined' && state.targets.danaDarurat) {
+                                if (danaDarurat > 0 && danaDarurat >= state.targets.danaDarurat && !sessionStorage.getItem('ledakan_darurat_selesai')) {
+                                    window.ledakkanConfetti();
+                                    sessionStorage.setItem('ledakan_darurat_selesai', 'true');
+                                }
+                            }
+                        } catch (err) {
+                            console.log("Confetti skip");
                         }
                     }
-                } catch (err) {
-                    // Abaikan diam-diam jika terjadi error saat pindah menu
-                }
-            } // <--- TAMBAHKAN SATU KURUNG KURAWAL INI DI SINI MAS
-            // ----------------------------------------------------
-            if (state.targets.danaOrtu) {
-                    const elOrtuTarget = document.getElementById('lbl-ortu-target');
-                    if (elOrtuTarget) elOrtuTarget.innerText = 'Rp ' + state.targets.danaOrtu.toLocaleString('id-ID');
-                }
-            }
 
+                    // --- Blok Dana Ortu ---
+                    if (state.targets.danaOrtu) {
+                        const elOrtuTarget = document.getElementById('lbl-ortu-target');
+                        if (elOrtuTarget) elOrtuTarget.innerText = 'Rp ' + state.targets.danaOrtu.toLocaleString('id-ID');
+                    }
+                } // <--- Ini satu-satunya penutup untuk if (state.targets)
+            // ----------------------------------------------------
+            
             // 5. Update Countdown
             const countdownEl = document.getElementById('nikah-countdown');
             if (countdownEl) {
