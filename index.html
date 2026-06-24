@@ -445,16 +445,16 @@
             const lblOrtu = document.getElementById('lbl-ortu-terkumpul');
             if (lblOrtu) lblOrtu.innerText = 'Rp ' + danaOrtu.toLocaleString('id-ID');
             // Menampilkan Target Darurat & Ortu dari Firebase ke layar
-        if (state.targets) {
-            if (state.targets.danaDarurat) {
-                const elDaruratTarget = document.getElementById('lbl-darurat-target');
-                if (elDaruratTarget) elDaruratTarget.innerText = 'Rp ' + state.targets.danaDarurat.toLocaleString('id-ID');
+            if (state.targets) {
+                if (state.targets.danaDarurat) {
+                    const elDaruratTarget = document.getElementById('lbl-darurat-target');
+                    if (elDaruratTarget) elDaruratTarget.innerText = 'Rp ' + state.targets.danaDarurat.toLocaleString('id-ID');
+                }
+                if (state.targets.danaOrtu) {
+                    const elOrtuTarget = document.getElementById('lbl-ortu-target');
+                    if (elOrtuTarget) elOrtuTarget.innerText = 'Rp ' + state.targets.danaOrtu.toLocaleString('id-ID');
+                }
             }
-            if (state.targets.danaOrtu) {
-                const elOrtuTarget = document.getElementById('lbl-ortu-target');
-                if (elOrtuTarget) elOrtuTarget.innerText = 'Rp ' + state.targets.danaOrtu.toLocaleString('id-ID');
-            }
-        }
 
             // 5. Update Countdown
             const countdownEl = document.getElementById('nikah-countdown');
@@ -528,30 +528,30 @@
         };
 
         const checkAntiBoros = (stats) => {
-        const body = document.body;
-        const peringatanEl = document.getElementById('anti-boros-warning');
+            const body = document.body;
+            const peringatanEl = document.getElementById('anti-boros-warning');
 
-        if (stats.pengeluaranBulanIni > stats.pengeluaranBulanLalu && stats.pengeluaranBulanLalu > 0) {
-            const percent = ((stats.pengeluaranBulanIni - stats.pengeluaranBulanLalu) / stats.pengeluaranBulanLalu * 100).toFixed(1);
-            peringatanEl.classList.remove('hidden');
-            document.getElementById('anti-boros-text').innerText = `Peringatan: Pengeluaran bulan ini naik ${percent}% dibanding bulan lalu!`;
+            if (stats.pengeluaranBulanIni > stats.pengeluaranBulanLalu && stats.pengeluaranBulanLalu > 0) {
+                const percent = ((stats.pengeluaranBulanIni - stats.pengeluaranBulanLalu) / stats.pengeluaranBulanLalu * 100).toFixed(1);
+                peringatanEl.classList.remove('hidden');
+                document.getElementById('anti-boros-text').innerText = `Peringatan: Pengeluaran bulan ini naik ${percent}% dibanding bulan lalu!`;
 
-            if (percent > 50) {
-                // Body cukup dikasih border statis, nggak usah berkedip
-                body.classList.add('border-4', 'border-red-600');
-                // Banner merahnya yang kita bikin berkedip
-                peringatanEl.classList.add('animate-pulse'); 
+                if (percent > 50) {
+                    // Body cukup dikasih border statis, nggak usah berkedip
+                    body.classList.add('border-4', 'border-red-600');
+                    // Banner merahnya yang kita bikin berkedip
+                    peringatanEl.classList.add('animate-pulse');
+                } else {
+                    body.classList.remove('border-4', 'border-red-600');
+                    peringatanEl.classList.remove('animate-pulse');
+                }
             } else {
+                // Kalau pengeluaran aman, sembunyikan semua peringatan
+                peringatanEl.classList.add('hidden');
                 body.classList.remove('border-4', 'border-red-600');
                 peringatanEl.classList.remove('animate-pulse');
             }
-        } else {
-            // Kalau pengeluaran aman, sembunyikan semua peringatan
-            peringatanEl.classList.add('hidden');
-            body.classList.remove('border-4', 'border-red-600');
-            peringatanEl.classList.remove('animate-pulse');
-        }
-    };
+        };
 
         const updateCharts = (stats) => {
             const ctxPie = document.getElementById('pieChart');
@@ -760,64 +760,64 @@
         };
 
         window.editDanaTarget = async (jenis) => {
-        const titleText = jenis === 'darurat' ? 'Dana Darurat' : 'Dana Orang Tua';
-        
-        const { value: nominal } = await Swal.fire({
-            title: `Update ${titleText}`,
-            input: 'text',
-            inputLabel: 'Masukkan nominal terkumpul:',
-            inputPlaceholder: 'Misal: 5.000.000',
-            background: '#1f2937',
-            color: '#fff',
-            showCancelButton: true,
-            confirmButtonColor: '#3b82f6',
-            cancelButtonColor: '#4b5563',
-            confirmButtonText: '<i class="fas fa-save"></i> Simpan',
-            cancelButtonText: 'Batal',
-            // Jurus sapu jagat format rupiah di dalam pop-up!
-            didOpen: () => {
-                const input = Swal.getInput();
-                input.inputMode = 'numeric';
-                input.addEventListener('input', () => {
-                    let rawValue = input.value.replace(/[^0-9]/g, '');
-                    input.value = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-                });
-            },
-            inputValidator: (value) => {
-                if (!value) return 'Nominal tidak boleh kosong!';
-            }
-        });
+            const titleText = jenis === 'darurat' ? 'Dana Darurat' : 'Dana Orang Tua';
 
-        if (nominal) {
-            // Bersihkan titik sebelum dibaca sistem
-            const cleanAngka = parseFloat(nominal.replace(/\./g, ''));
-            
-            // Format ke Rupiah standar Indonesia
-            const formatRp = new Intl.NumberFormat('id-ID', { 
-                style: 'currency', currency: 'IDR', minimumFractionDigits: 0 
-            }).format(cleanAngka);
-            
-            // Update tampilan di layar secara instan & Simpan ke Firebase
-            if (jenis === 'darurat') {
-                document.getElementById('lbl-darurat-target').innerText = formatRp;
-                await saveTargets({ danaDarurat: cleanAngka });
-            } else {
-                document.getElementById('lbl-ortu-target').innerText = formatRp;
-                await saveTargets({ danaOrtu: cleanAngka });
-            }
-
-            // Notifikasi Sukses
-            Swal.fire({
-                title: 'Berhasil!',
-                text: `${titleText} telah diupdate menjadi ${formatRp}`,
-                icon: 'success',
+            const { value: nominal } = await Swal.fire({
+                title: `Update ${titleText}`,
+                input: 'text',
+                inputLabel: 'Masukkan nominal terkumpul:',
+                inputPlaceholder: 'Misal: 5.000.000',
                 background: '#1f2937',
                 color: '#fff',
-                showConfirmButton: false,
-                timer: 2000
+                showCancelButton: true,
+                confirmButtonColor: '#3b82f6',
+                cancelButtonColor: '#4b5563',
+                confirmButtonText: '<i class="fas fa-save"></i> Simpan',
+                cancelButtonText: 'Batal',
+                // Jurus sapu jagat format rupiah di dalam pop-up!
+                didOpen: () => {
+                    const input = Swal.getInput();
+                    input.inputMode = 'numeric';
+                    input.addEventListener('input', () => {
+                        let rawValue = input.value.replace(/[^0-9]/g, '');
+                        input.value = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                    });
+                },
+                inputValidator: (value) => {
+                    if (!value) return 'Nominal tidak boleh kosong!';
+                }
             });
-        }
-    };
+
+            if (nominal) {
+                // Bersihkan titik sebelum dibaca sistem
+                const cleanAngka = parseFloat(nominal.replace(/\./g, ''));
+
+                // Format ke Rupiah standar Indonesia
+                const formatRp = new Intl.NumberFormat('id-ID', {
+                    style: 'currency', currency: 'IDR', minimumFractionDigits: 0
+                }).format(cleanAngka);
+
+                // Update tampilan di layar secara instan & Simpan ke Firebase
+                if (jenis === 'darurat') {
+                    document.getElementById('lbl-darurat-target').innerText = formatRp;
+                    await saveTargets({ danaDarurat: cleanAngka });
+                } else {
+                    document.getElementById('lbl-ortu-target').innerText = formatRp;
+                    await saveTargets({ danaOrtu: cleanAngka });
+                }
+
+                // Notifikasi Sukses
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: `${titleText} telah diupdate menjadi ${formatRp}`,
+                    icon: 'success',
+                    background: '#1f2937',
+                    color: '#fff',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            }
+        };
 
         window.deleteTransaction = (id) => {
             Swal.fire({
@@ -1168,11 +1168,11 @@
             /* Firefox */
         }
     </style>
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#111827">
     <!-- JALUR KHUSUS LOGO IPHONE -->
-    <link rel="apple-touch-icon" href="./logo.png">
-    <link rel="icon" type="image/png" href="./logo.png">
+    <link rel="apple-touch-icon" href="/logo.png">
+    <link rel="icon" type="image/png" href="/logo.png">
 </head>
 
 <body class="bg-gray-900 text-gray-100 font-sans min-h-screen transition-colors duration-500 pb-20 md:pb-0">
@@ -1557,109 +1557,120 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Card Dana Darurat -->
-              <div class="glass-card p-5 rounded-2xl relative group">
-                  <!-- Tombol Edit Darurat -->
-                  <button onclick="editDanaTarget('darurat')" class="absolute top-4 right-4 text-gray-500 hover:text-red-400 transition-colors">
-                      <i class="fas fa-edit text-lg"></i>
-                  </button>
-                  <h3 class="font-bold text-gray-300 mb-4"><i class="fas fa-briefcase-medical text-red-400"></i> Dana Darurat</h3>
-                  <div class="flex justify-between items-end">
-                      <div>
-                          <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Terkumpul</p>
-                          <p class="text-2xl font-black text-white" id="lbl-darurat-terkumpul">Rp 0</p>
-                      </div>
-                      <div class="text-right">
-                          <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Target</p>
-                          <p class="text-lg font-bold text-blue-400" id="lbl-darurat-target">Rp 0</p>
-                      </div>
-                  </div>
-              </div>
-
-              <!-- Card Dana Orang Tua -->
-              <div class="glass-card p-5 rounded-2xl relative group">
-                  <!-- Tombol Edit Ortu -->
-                  <button onclick="editDanaTarget('ortu')" class="absolute top-4 right-4 text-gray-500 hover:text-green-400 transition-colors">
-                      <i class="fas fa-edit text-lg"></i>
-                  </button>
-                  <h3 class="font-bold text-gray-300 mb-4"><i class="fas fa-user-friends text-green-400"></i> Dana Orang Tua</h3>
-                  <div class="flex justify-between items-end">
-                      <div>
-                          <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Terkumpul</p>
-                          <p class="text-2xl font-black text-white" id="lbl-ortu-terkumpul">Rp 0</p>
-                      </div>
-                      <div class="text-right">
-                          <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Target</p>
-                          <p class="text-lg font-bold text-green-400" id="lbl-ortu-target">Rp 0</p>
-                      </div>
-                  </div>
-              </div>
-
-                <div id="view-laporan" class="tab-content hidden space-y-6 animasi-masuk">
-                    <div class="glass-card p-6 rounded-2xl">
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                            <h2 class="text-2xl font-black"><i class="fas fa-chart-pie text-blue-400"></i> Analitik
-                                Pengeluaran</h2>
-                            <div class="flex gap-2 w-full md:w-auto">
-                                <button onclick="exportData('excel')"
-                                    class="flex-1 md:flex-none bg-green-700 hover:bg-green-600 text-white text-xs font-bold py-2 px-4 rounded transition"><i
-                                        class="fas fa-file-excel mr-1"></i> Excel</button>
-                                <button onclick="exportData('pdf')"
-                                    class="flex-1 md:flex-none bg-red-700 hover:bg-red-600 text-white text-xs font-bold py-2 px-4 rounded transition"><i
-                                        class="fas fa-file-pdf mr-1"></i> PDF</button>
-                                <button onclick="exportData('json')"
-                                    class="flex-1 md:flex-none bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold py-2 px-4 rounded transition"><i
-                                        class="fas fa-file-code mr-1"></i> JSON</button>
+                        <div class="glass-card p-5 rounded-2xl relative group">
+                            <!-- Tombol Edit Darurat -->
+                            <button onclick="editDanaTarget('darurat')"
+                                class="absolute top-4 right-4 text-gray-500 hover:text-red-400 transition-colors">
+                                <i class="fas fa-edit text-lg"></i>
+                            </button>
+                            <h3 class="font-bold text-gray-300 mb-4"><i
+                                    class="fas fa-briefcase-medical text-red-400"></i> Dana Darurat</h3>
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Terkumpul</p>
+                                    <p class="text-2xl font-black text-white" id="lbl-darurat-terkumpul">Rp 0</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Target</p>
+                                    <p class="text-lg font-bold text-blue-400" id="lbl-darurat-target">Rp 0</p>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="w-full md:w-2/3 mx-auto aspect-square md:aspect-video relative">
-                            <canvas id="pieChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-simulasi" class="tab-content hidden space-y-6 animasi-masuk">
-                    <div class="glass-card p-6 rounded-2xl relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-4 opacity-10">
-                            <i class="fas fa-magic text-9xl"></i>
-                        </div>
-                        <h2 class="text-2xl font-black mb-2"><i class="fas fa-calculator text-blue-400"></i> Simulator
-                            Hemat</h2>
-                        <p class="text-sm text-gray-400 mb-6">Lihat apa yang terjadi jika kamu mengurangi pengeluaran
-                            harian ini.</p>
-
-                        <div class="space-y-4 relative z-10">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi
-                                    Jajan/Cemilan (Rp/Hari)</label>
-                                <input type="text" inputmode="numeric" id="sim-jajan" value="20000"
-                                    class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi Kopi/Minuman
-                                    Kekinian (Rp/Hari)</label>
-                                <input type="text" inputmode="numeric" id="sim-kopi" value="15000"
-                                    class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi Rokok
-                                    (Rp/Hari)</label>
-                                <input type="text" inputmode="numeric" id="sim-rokok" value="0"
-                                    class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
-                            </div>
-
-                            <div
-                                class="mt-8 p-6 bg-gradient-to-br from-green-900/60 to-emerald-900/40 rounded-xl border border-green-500/30 text-center shadow-lg">
-                                <p class="text-gray-300 text-sm font-bold mb-2">Jika kamu konsisten, dalam 1 Tahun kamu
-                                    akan memiliki tambahan:</p>
-                                <p id="sim-result" class="text-4xl font-black text-green-400 mb-2">Rp 0</p>
-                                <p id="sim-days"
-                                    class="text-sm text-yellow-400 font-bold bg-yellow-900/30 inline-block px-3 py-1 rounded">
-                                </p>
+                        <!-- Card Dana Orang Tua -->
+                        <div class="glass-card p-5 rounded-2xl relative group">
+                            <!-- Tombol Edit Ortu -->
+                            <button onclick="editDanaTarget('ortu')"
+                                class="absolute top-4 right-4 text-gray-500 hover:text-green-400 transition-colors">
+                                <i class="fas fa-edit text-lg"></i>
+                            </button>
+                            <h3 class="font-bold text-gray-300 mb-4"><i class="fas fa-user-friends text-green-400"></i>
+                                Dana Orang Tua</h3>
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Terkumpul</p>
+                                    <p class="text-2xl font-black text-white" id="lbl-ortu-terkumpul">Rp 0</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Target</p>
+                                    <p class="text-lg font-bold text-green-400" id="lbl-ortu-target">Rp 0</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+
+                        <div id="view-laporan" class="tab-content hidden space-y-6 animasi-masuk">
+                            <div class="glass-card p-6 rounded-2xl">
+                                <div
+                                    class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                                    <h2 class="text-2xl font-black"><i class="fas fa-chart-pie text-blue-400"></i>
+                                        Analitik
+                                        Pengeluaran</h2>
+                                    <div class="flex gap-2 w-full md:w-auto">
+                                        <button onclick="exportData('excel')"
+                                            class="flex-1 md:flex-none bg-green-700 hover:bg-green-600 text-white text-xs font-bold py-2 px-4 rounded transition"><i
+                                                class="fas fa-file-excel mr-1"></i> Excel</button>
+                                        <button onclick="exportData('pdf')"
+                                            class="flex-1 md:flex-none bg-red-700 hover:bg-red-600 text-white text-xs font-bold py-2 px-4 rounded transition"><i
+                                                class="fas fa-file-pdf mr-1"></i> PDF</button>
+                                        <button onclick="exportData('json')"
+                                            class="flex-1 md:flex-none bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold py-2 px-4 rounded transition"><i
+                                                class="fas fa-file-code mr-1"></i> JSON</button>
+                                    </div>
+                                </div>
+
+                                <div class="w-full md:w-2/3 mx-auto aspect-square md:aspect-video relative">
+                                    <canvas id="pieChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="view-simulasi" class="tab-content hidden space-y-6 animasi-masuk">
+                            <div class="glass-card p-6 rounded-2xl relative overflow-hidden">
+                                <div class="absolute top-0 right-0 p-4 opacity-10">
+                                    <i class="fas fa-magic text-9xl"></i>
+                                </div>
+                                <h2 class="text-2xl font-black mb-2"><i class="fas fa-calculator text-blue-400"></i>
+                                    Simulator
+                                    Hemat</h2>
+                                <p class="text-sm text-gray-400 mb-6">Lihat apa yang terjadi jika kamu mengurangi
+                                    pengeluaran
+                                    harian ini.</p>
+
+                                <div class="space-y-4 relative z-10">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi
+                                            Jajan/Cemilan (Rp/Hari)</label>
+                                        <input type="text" inputmode="numeric" id="sim-jajan" value="20000"
+                                            class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi
+                                            Kopi/Minuman
+                                            Kekinian (Rp/Hari)</label>
+                                        <input type="text" inputmode="numeric" id="sim-kopi" value="15000"
+                                            class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi
+                                            Rokok
+                                            (Rp/Hari)</label>
+                                        <input type="text" inputmode="numeric" id="sim-rokok" value="0"
+                                            class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                                    </div>
+
+                                    <div
+                                        class="mt-8 p-6 bg-gradient-to-br from-green-900/60 to-emerald-900/40 rounded-xl border border-green-500/30 text-center shadow-lg">
+                                        <p class="text-gray-300 text-sm font-bold mb-2">Jika kamu konsisten, dalam 1
+                                            Tahun kamu
+                                            akan memiliki tambahan:</p>
+                                        <p id="sim-result" class="text-4xl font-black text-green-400 mb-2">Rp 0</p>
+                                        <p id="sim-days"
+                                            class="text-sm text-yellow-400 font-bold bg-yellow-900/30 inline-block px-3 py-1 rounded">
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
             </main>
         </div>
