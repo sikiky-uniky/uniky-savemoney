@@ -528,24 +528,30 @@
         };
 
         const checkAntiBoros = (stats) => {
-            const body = document.body;
-            const peringatanEl = document.getElementById('anti-boros-warning');
+        const body = document.body;
+        const peringatanEl = document.getElementById('anti-boros-warning');
 
-            if (stats.pengeluaranBulanIni > stats.pengeluaranBulanLalu && stats.pengeluaranBulanLalu > 0) {
-                const percent = ((stats.pengeluaranBulanIni - stats.pengeluaranBulanLalu) / stats.pengeluaranBulanLalu * 100).toFixed(1);
-                peringatanEl.classList.remove('hidden');
-                document.getElementById('anti-boros-text').innerText = `Peringatan: Pengeluaran bulan ini naik ${percent}% dibanding bulan lalu!`;
+        if (stats.pengeluaranBulanIni > stats.pengeluaranBulanLalu && stats.pengeluaranBulanLalu > 0) {
+            const percent = ((stats.pengeluaranBulanIni - stats.pengeluaranBulanLalu) / stats.pengeluaranBulanLalu * 100).toFixed(1);
+            peringatanEl.classList.remove('hidden');
+            document.getElementById('anti-boros-text').innerText = `Peringatan: Pengeluaran bulan ini naik ${percent}% dibanding bulan lalu!`;
 
-                if (percent > 50) {
-                    body.classList.add('border-4', 'border-red-600', 'animate-pulse');
-                } else {
-                    body.classList.remove('border-4', 'border-red-600', 'animate-pulse');
-                }
+            if (percent > 50) {
+                // Body cukup dikasih border statis, nggak usah berkedip
+                body.classList.add('border-4', 'border-red-600');
+                // Banner merahnya yang kita bikin berkedip
+                peringatanEl.classList.add('animate-pulse'); 
             } else {
-                peringatanEl.classList.add('hidden');
-                body.classList.remove('border-4', 'border-red-600', 'animate-pulse');
+                body.classList.remove('border-4', 'border-red-600');
+                peringatanEl.classList.remove('animate-pulse');
             }
-        };
+        } else {
+            // Kalau pengeluaran aman, sembunyikan semua peringatan
+            peringatanEl.classList.add('hidden');
+            body.classList.remove('border-4', 'border-red-600');
+            peringatanEl.classList.remove('animate-pulse');
+        }
+    };
 
         const updateCharts = (stats) => {
             const ctxPie = document.getElementById('pieChart');
