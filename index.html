@@ -742,6 +742,64 @@
             });
         };
 
+        window.editDanaTarget = async (jenis) => {
+        const titleText = jenis === 'darurat' ? 'Dana Darurat' : 'Dana Orang Tua';
+        
+        const { value: nominal } = await Swal.fire({
+            title: `Update ${titleText}`,
+            input: 'text',
+            inputLabel: 'Masukkan nominal terkumpul:',
+            inputPlaceholder: 'Misal: 5.000.000',
+            background: '#1f2937',
+            color: '#fff',
+            showCancelButton: true,
+            confirmButtonColor: '#3b82f6',
+            cancelButtonColor: '#4b5563',
+            confirmButtonText: '<i class="fas fa-save"></i> Simpan',
+            cancelButtonText: 'Batal',
+            // Jurus sapu jagat format rupiah di dalam pop-up!
+            didOpen: () => {
+                const input = Swal.getInput();
+                input.inputMode = 'numeric';
+                input.addEventListener('input', () => {
+                    let rawValue = input.value.replace(/[^0-9]/g, '');
+                    input.value = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                });
+            },
+            inputValidator: (value) => {
+                if (!value) return 'Nominal tidak boleh kosong!';
+            }
+        });
+
+        if (nominal) {
+            // Bersihkan titik sebelum dibaca sistem
+            const cleanAngka = parseFloat(nominal.replace(/\./g, ''));
+            
+            // Format ke Rupiah standar Indonesia
+            const formatRp = new Intl.NumberFormat('id-ID', { 
+                style: 'currency', currency: 'IDR', minimumFractionDigits: 0 
+            }).format(cleanAngka);
+            
+            // Update tampilan di layar secara instan
+            if (jenis === 'darurat') {
+                document.getElementById('lbl-darurat-terkumpul').innerText = formatRp;
+            } else {
+                document.getElementById('lbl-ortu-terkumpul').innerText = formatRp;
+            }
+
+            // Notifikasi Sukses
+            Swal.fire({
+                title: 'Berhasil!',
+                text: `${titleText} telah diupdate menjadi ${formatRp}`,
+                icon: 'success',
+                background: '#1f2937',
+                color: '#fff',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+    };
+
         window.deleteTransaction = (id) => {
             Swal.fire({
                 title: 'Hapus data ini?',
@@ -1479,13 +1537,26 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="glass-card p-5 rounded-2xl">
+                        <!-- Card Dana Darurat -->
+                        <div class="glass-card p-5 rounded-2xl relative group">
+                            <!-- Tombol Edit Darurat -->
+                            <button onclick="editDanaTarget('darurat')"
+                                class="absolute top-4 right-4 text-gray-500 hover:text-red-400 transition-colors">
+                                <i class="fas fa-edit text-lg"></i>
+                            </button>
                             <h3 class="font-bold text-gray-300 mb-2"><i
                                     class="fas fa-briefcase-medical text-red-400"></i> Dana Darurat</h3>
                             <p class="text-2xl font-black text-white" id="lbl-darurat-terkumpul">Rp 0</p>
                             <p class="text-xs text-gray-400 mt-1">Uang siap pakai untuk keadaan genting.</p>
                         </div>
-                        <div class="glass-card p-5 rounded-2xl">
+
+                        <!-- Card Dana Orang Tua -->
+                        <div class="glass-card p-5 rounded-2xl relative group">
+                            <!-- Tombol Edit Ortu -->
+                            <button onclick="editDanaTarget('ortu')"
+                                class="absolute top-4 right-4 text-gray-500 hover:text-green-400 transition-colors">
+                                <i class="fas fa-edit text-lg"></i>
+                            </button>
                             <h3 class="font-bold text-gray-300 mb-2"><i class="fas fa-user-friends text-green-400"></i>
                                 Dana Orang Tua</h3>
                             <p class="text-2xl font-black text-white" id="lbl-ortu-terkumpul">Rp 0</p>
