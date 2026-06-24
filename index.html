@@ -444,6 +444,17 @@
 
             const lblOrtu = document.getElementById('lbl-ortu-terkumpul');
             if (lblOrtu) lblOrtu.innerText = 'Rp ' + danaOrtu.toLocaleString('id-ID');
+            // Menampilkan Target Darurat & Ortu dari Firebase ke layar
+        if (state.targets) {
+            if (state.targets.danaDarurat) {
+                const elDaruratTarget = document.getElementById('lbl-darurat-target');
+                if (elDaruratTarget) elDaruratTarget.innerText = 'Rp ' + state.targets.danaDarurat.toLocaleString('id-ID');
+            }
+            if (state.targets.danaOrtu) {
+                const elOrtuTarget = document.getElementById('lbl-ortu-target');
+                if (elOrtuTarget) elOrtuTarget.innerText = 'Rp ' + state.targets.danaOrtu.toLocaleString('id-ID');
+            }
+        }
 
             // 5. Update Countdown
             const countdownEl = document.getElementById('nikah-countdown');
@@ -782,11 +793,11 @@
             
             // Update tampilan di layar secara instan & Simpan ke Firebase
             if (jenis === 'darurat') {
-                document.getElementById('lbl-darurat-terkumpul').innerText = formatRp;
-                await saveTargets({ danaDarurat: cleanAngka }); // <-- Menyimpan Darurat ke awan
+                document.getElementById('lbl-darurat-target').innerText = formatRp;
+                await saveTargets({ danaDarurat: cleanAngka });
             } else {
-                document.getElementById('lbl-ortu-terkumpul').innerText = formatRp;
-                await saveTargets({ danaOrtu: cleanAngka }); // <-- Menyimpan Ortu ke awan
+                document.getElementById('lbl-ortu-target').innerText = formatRp;
+                await saveTargets({ danaOrtu: cleanAngka });
             }
 
             // Notifikasi Sukses
@@ -1540,32 +1551,42 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Card Dana Darurat -->
-                        <div class="glass-card p-5 rounded-2xl relative group">
-                            <!-- Tombol Edit Darurat -->
-                            <button onclick="editDanaTarget('darurat')"
-                                class="absolute top-4 right-4 text-gray-500 hover:text-red-400 transition-colors">
-                                <i class="fas fa-edit text-lg"></i>
-                            </button>
-                            <h3 class="font-bold text-gray-300 mb-2"><i
-                                    class="fas fa-briefcase-medical text-red-400"></i> Dana Darurat</h3>
-                            <p class="text-2xl font-black text-white" id="lbl-darurat-terkumpul">Rp 0</p>
-                            <p class="text-xs text-gray-400 mt-1">Uang siap pakai untuk keadaan genting.</p>
-                        </div>
+              <div class="glass-card p-5 rounded-2xl relative group">
+                  <!-- Tombol Edit Darurat -->
+                  <button onclick="editDanaTarget('darurat')" class="absolute top-4 right-4 text-gray-500 hover:text-red-400 transition-colors">
+                      <i class="fas fa-edit text-lg"></i>
+                  </button>
+                  <h3 class="font-bold text-gray-300 mb-4"><i class="fas fa-briefcase-medical text-red-400"></i> Dana Darurat</h3>
+                  <div class="flex justify-between items-end">
+                      <div>
+                          <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Terkumpul</p>
+                          <p class="text-2xl font-black text-white" id="lbl-darurat-terkumpul">Rp 0</p>
+                      </div>
+                      <div class="text-right">
+                          <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Target</p>
+                          <p class="text-lg font-bold text-blue-400" id="lbl-darurat-target">Rp 0</p>
+                      </div>
+                  </div>
+              </div>
 
-                        <!-- Card Dana Orang Tua -->
-                        <div class="glass-card p-5 rounded-2xl relative group">
-                            <!-- Tombol Edit Ortu -->
-                            <button onclick="editDanaTarget('ortu')"
-                                class="absolute top-4 right-4 text-gray-500 hover:text-green-400 transition-colors">
-                                <i class="fas fa-edit text-lg"></i>
-                            </button>
-                            <h3 class="font-bold text-gray-300 mb-2"><i class="fas fa-user-friends text-green-400"></i>
-                                Dana Orang Tua</h3>
-                            <p class="text-2xl font-black text-white" id="lbl-ortu-terkumpul">Rp 0</p>
-                            <p class="text-xs text-gray-400 mt-1">Bakti kepada orang tua.</p>
-                        </div>
-                    </div>
-                </div>
+              <!-- Card Dana Orang Tua -->
+              <div class="glass-card p-5 rounded-2xl relative group">
+                  <!-- Tombol Edit Ortu -->
+                  <button onclick="editDanaTarget('ortu')" class="absolute top-4 right-4 text-gray-500 hover:text-green-400 transition-colors">
+                      <i class="fas fa-edit text-lg"></i>
+                  </button>
+                  <h3 class="font-bold text-gray-300 mb-4"><i class="fas fa-user-friends text-green-400"></i> Dana Orang Tua</h3>
+                  <div class="flex justify-between items-end">
+                      <div>
+                          <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Terkumpul</p>
+                          <p class="text-2xl font-black text-white" id="lbl-ortu-terkumpul">Rp 0</p>
+                      </div>
+                      <div class="text-right">
+                          <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Target</p>
+                          <p class="text-lg font-bold text-green-400" id="lbl-ortu-target">Rp 0</p>
+                      </div>
+                  </div>
+              </div>
 
                 <div id="view-laporan" class="tab-content hidden space-y-6 animasi-masuk">
                     <div class="glass-card p-6 rounded-2xl">
