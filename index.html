@@ -492,8 +492,9 @@ window.ledakkanConfetti = () => {
                 } catch (err) {
                     // Abaikan diam-diam jika terjadi error saat pindah menu
                 }
-                // ----------------------------------------------------
-                if (state.targets.danaOrtu) {
+            } // <--- TAMBAHKAN SATU KURUNG KURAWAL INI DI SINI MAS
+            // ----------------------------------------------------
+            if (state.targets.danaOrtu) {
                     const elOrtuTarget = document.getElementById('lbl-ortu-target');
                     if (elOrtuTarget) elOrtuTarget.innerText = 'Rp ' + state.targets.danaOrtu.toLocaleString('id-ID');
                 }
