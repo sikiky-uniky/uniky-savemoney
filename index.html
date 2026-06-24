@@ -479,11 +479,20 @@ window.ledakkanConfetti = () => {
                 if (state.targets.danaDarurat) {
                     const elDaruratTarget = document.getElementById('lbl-darurat-target');
                     if (elDaruratTarget) elDaruratTarget.innerText = 'Rp ' + state.targets.danaDarurat.toLocaleString('id-ID');
-                    // --- PELATUK CONFETTI SULTAN ---
-                if (danaDarurat > 0 && danaDarurat >= state.targets.danaDarurat) {
-                    window.ledakkanConfetti();
+                    // --- PELATUK CONFETTI SULTAN (REVISI ANTI-CRASH) ---
+                try {
+                    if (typeof danaDarurat !== 'undefined' && state && state.targets && state.targets.danaDarurat) {
+                        // Cek apakah sudah pernah meledak di sesi ini
+                        if (danaDarurat > 0 && danaDarurat >= state.targets.danaDarurat && !sessionStorage.getItem('ledakan_darurat_selesai')) {
+                            window.ledakkanConfetti();
+                            // Kunci pelatuknya agar tidak meledak terus-menerus
+                            sessionStorage.setItem('ledakan_darurat_selesai', 'true');
+                        }
+                    }
+                } catch (err) {
+                    // Abaikan diam-diam jika terjadi error saat pindah menu
                 }
-                }
+                // ----------------------------------------------------
                 if (state.targets.danaOrtu) {
                     const elOrtuTarget = document.getElementById('lbl-ortu-target');
                     if (elOrtuTarget) elOrtuTarget.innerText = 'Rp ' + state.targets.danaOrtu.toLocaleString('id-ID');
