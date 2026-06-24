@@ -581,9 +581,9 @@
         };
 
         const updateSimulator = () => {
-            const hematJajan = parseInt(document.getElementById('sim-jajan').value) || 0;
-            const hematKopi = parseInt(document.getElementById('sim-kopi').value) || 0;
-            const hematRokok = parseInt(document.getElementById('sim-rokok').value) || 0;
+            const hematJajan = parseInt(document.getElementById('sim-jajan').value.replace(/\./g, '')) || 0;
+            const hematKopi = parseInt(document.getElementById('sim-kopi').value.replace(/\./g, '')) || 0;
+            const hematRokok = parseInt(document.getElementById('sim-rokok').value.replace(/\./g, '')) || 0;
 
             const harian = hematJajan + hematKopi + hematRokok;
             const tahunan = harian * 365;
@@ -660,7 +660,7 @@
             // --- FITUR ANTI-SPAM SELESAI ---
 
             const type = document.getElementById('tx-type').value;
-            const amount = parseFloat(document.getElementById('tx-amount').value);
+            const amount = parseFloat(document.getElementById('tx-amount').value.replace(/\./g, ''));
             const category = document.getElementById('tx-category').value;
             const date = document.getElementById('tx-date').value;
             const note = document.getElementById('tx-note').value;
@@ -1413,7 +1413,7 @@
                                 <div>
                                     <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Nominal
                                         (Rp)</label>
-                                    <input type="number" id="tx-amount" required placeholder="0"
+                                    <input type="text" inputmode="numeric" id="tx-amount" required placeholder="0"
                                         class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white font-bold text-lg focus:outline-none focus:border-blue-500">
                                 </div>
                                 <div>
@@ -1532,19 +1532,19 @@
                             <div>
                                 <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi
                                     Jajan/Cemilan (Rp/Hari)</label>
-                                <input type="number" id="sim-jajan" value="20000"
+                                <input type="text" inputmode="numeric" id="sim-jajan" value="20000"
                                     class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi Kopi/Minuman
                                     Kekinian (Rp/Hari)</label>
-                                <input type="number" id="sim-kopi" value="15000"
+                                <input type="text" inputmode="numeric" id="sim-kopi" value="15000"
                                     class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi Rokok
                                     (Rp/Hari)</label>
-                                <input type="number" id="sim-rokok" value="0"
+                                <input type="text" inputmode="numeric" id="sim-rokok" value="0"
                                     class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
                             </div>
 
@@ -1593,56 +1593,75 @@
     </script>
     <!-- JURUS KALKULATOR TARGET & FORMAT RUPIAH -->
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const dateInput = document.getElementById('target-nikah-date');
-        const amountInput = document.getElementById('target-nikah-amount');
-        const calcText = document.getElementById('kalkulator-target');
-        const calcResult = document.getElementById('hasil-kalkulasi');
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateInput = document.getElementById('target-nikah-date');
+            const amountInput = document.getElementById('target-nikah-amount');
+            const calcText = document.getElementById('kalkulator-target');
+            const calcResult = document.getElementById('hasil-kalkulasi');
 
-        // Fungsi Format Rupiah saat ngetik
-        amountInput.addEventListener('input', function(e) {
-          // Hapus semua huruf/simbol, sisakan angka
-          let rawValue = this.value.replace(/[^0-9]/g, '');
-          // Kasih titik setiap 3 angka
-          this.value = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-          hitungBebanBulanan(); // Langsung hitung otomatis!
+            // Fungsi Format Rupiah saat ngetik
+            amountInput.addEventListener('input', function (e) {
+                // Hapus semua huruf/simbol, sisakan angka
+                let rawValue = this.value.replace(/[^0-9]/g, '');
+                // Kasih titik setiap 3 angka
+                this.value = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                hitungBebanBulanan(); // Langsung hitung otomatis!
+            });
+
+            // Hitung ulang kalau tanggal diganti
+            dateInput.addEventListener('change', hitungBebanBulanan);
+            // --- JURUS SAPU JAGAT: Format Rupiah untuk Input Data & Simulasi ---
+            const inputRupiahIDs = ['tx-amount', 'sim-jajan', 'sim-kopi', 'sim-rokok'];
+
+            inputRupiahIDs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', function (e) {
+                        // Hapus semua huruf/simbol, sisakan angka
+                        let rawValue = this.value.replace(/[^0-9]/g, '');
+                        // Kasih titik setiap 3 angka
+                        this.value = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+                        // Khusus untuk menu simulasi, paksa hitung ulang saat diketik
+                        if (id.startsWith('sim-') && typeof updateSimulator === 'function') {
+                            updateSimulator();
+                        }
+                    });
+                }
+            });
+
+            function hitungBebanBulanan() {
+                // Ambil angka asli tanpa titik
+                const targetAngka = parseFloat(amountInput.value.replace(/\./g, ''));
+                const targetTanggal = new Date(dateInput.value);
+                const hariIni = new Date();
+
+                // Kalau form kosong atau tanggalnya di masa lalu, sembunyikan kalkulator
+                if (!targetAngka || isNaN(targetAngka) || !dateInput.value || targetTanggal <= hariIni) {
+                    calcText.classList.add('hidden');
+                    return;
+                }
+
+                // Hitung selisih bulan
+                let selisihBulan = (targetTanggal.getFullYear() - hariIni.getFullYear()) * 12;
+                selisihBulan -= hariIni.getMonth();
+                selisihBulan += targetTanggal.getMonth();
+
+                if (selisihBulan <= 0) selisihBulan = 1; // Minimal 1 bulan biar nggak error bagi nol
+
+                // Rumus: Total Biaya dibagi Sisa Bulan
+                const bebanPerBulan = targetAngka / selisihBulan;
+
+                // Format hasil bagi ke Rupiah
+                const formatRupiah = new Intl.NumberFormat('id-ID', {
+                    style: 'currency', currency: 'IDR', minimumFractionDigits: 0
+                }).format(bebanPerBulan);
+
+                // Tampilkan ke layar!
+                calcResult.innerHTML = `${formatRupiah}`;
+                calcText.classList.remove('hidden');
+            }
         });
-
-        // Hitung ulang kalau tanggal diganti
-        dateInput.addEventListener('change', hitungBebanBulanan);
-
-        function hitungBebanBulanan() {
-          // Ambil angka asli tanpa titik
-          const targetAngka = parseFloat(amountInput.value.replace(/\./g, ''));
-          const targetTanggal = new Date(dateInput.value);
-          const hariIni = new Date();
-
-          // Kalau form kosong atau tanggalnya di masa lalu, sembunyikan kalkulator
-          if (!targetAngka || isNaN(targetAngka) || !dateInput.value || targetTanggal <= hariIni) {
-            calcText.classList.add('hidden');
-            return;
-          }
-
-          // Hitung selisih bulan
-          let selisihBulan = (targetTanggal.getFullYear() - hariIni.getFullYear()) * 12;
-          selisihBulan -= hariIni.getMonth();
-          selisihBulan += targetTanggal.getMonth();
-          
-          if (selisihBulan <= 0) selisihBulan = 1; // Minimal 1 bulan biar nggak error bagi nol
-
-          // Rumus: Total Biaya dibagi Sisa Bulan
-          const bebanPerBulan = targetAngka / selisihBulan;
-
-          // Format hasil bagi ke Rupiah
-          const formatRupiah = new Intl.NumberFormat('id-ID', { 
-            style: 'currency', currency: 'IDR', minimumFractionDigits: 0 
-          }).format(bebanPerBulan);
-
-          // Tampilkan ke layar!
-          calcResult.innerHTML = `${formatRupiah}`;
-          calcText.classList.remove('hidden');
-        }
-      });
     </script>
 </body>
 
