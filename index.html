@@ -39,7 +39,37 @@
                 }
             }
         }
+// Fungsi Pemicu Ledakan Confetti
+window.ledakkanConfetti = () => {
+    const duration = 3 * 1000; // Durasi ledakan 3 detik
+    const animationEnd = Date.now() + duration;
 
+    // Warna partikel disesuaikan dengan tema UNIKY (Biru, Zamrud, Emas)
+    const colors = ['#3b82f6', '#10b981', '#fbbf24'];
+
+    (function frame() {
+        // Tembakan dari kiri
+        confetti({
+            particleCount: 5,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+            colors: colors
+        });
+        // Tembakan dari kanan
+        confetti({
+            particleCount: 5,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+            colors: colors
+        });
+
+        if (Date.now() < animationEnd) {
+            requestAnimationFrame(frame);
+        }
+    }());
+};
         // --- SISTEM DATA & KATEGORI ---
         const CATEGORIES = {
             'Makan': { type: 'expense', priority: 'wajib', color: 'text-blue-400' },
@@ -1203,9 +1233,9 @@
         </div>
         <div class="w-full max-w-md glass-card p-6 rounded-2xl shadow-2xl border border-gray-800 relative z-10">
             <div class="text-center mb-6">
-                <img src="/logo.png" alt="Logo UNIKY"
-                    class="w-20 h-20 mx-auto mb-4 object-contain drop-shadow-[0_0_15px_rgba(255,215,0,0.4)]"
-                    style="mix-blend-mode: screen;">
+                <img src="/logo.png" alt="Logo UNIKY" onclick="window.ledakkanConfetti()" 
+     class="w-20 h-20 mx-auto mb-4 object-contain drop-shadow-[0_0_15px_rgba(255,215,0,0.4)] cursor-pointer" 
+     style="mix-blend-mode: screen;">
                 <h1 class="text-xl font-black text-white uppercase tracking-widest">Portal UNIKY</h1>
                 <p class="text-sm text-gray-400 mt-1">Manajemen Keuangan Privat - Ekosistem Terpadu</p>
             </div>
@@ -1774,6 +1804,8 @@
             }
         });
     </script>
+    <!-- Library Efek Visual Confetti Sultan -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </body>
 
 </html>
