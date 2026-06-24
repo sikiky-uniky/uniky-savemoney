@@ -475,41 +475,17 @@ window.ledakkanConfetti = () => {
             const lblOrtu = document.getElementById('lbl-ortu-terkumpul');
             if (lblOrtu) lblOrtu.innerText = 'Rp ' + danaOrtu.toLocaleString('id-ID');
             // Menampilkan Target Darurat & Ortu dari Firebase ke layar
-            // 4. Update Darurat & Ortu (SISTEM ANTI-CRASH)
-                if (typeof state !== 'undefined' && state && state.targets) {
-                    
-                    // --- Blok Dana Darurat ---
-                    if (state.targets.danaDarurat) {
-                        const elDaruratTarget = document.getElementById('lbl-darurat-target');
-                        if (elDaruratTarget) elDaruratTarget.innerText = 'Rp ' + state.targets.danaDarurat.toLocaleString('id-ID');
-                        
-                        // --- PELATUK CONFETTI SULTAN (GEMBOK SUPER KETAT) ---
-                        try {
-                            const isPlayed = sessionStorage.getItem('confetti_played');
-                            
-                            // Syarat mutlak: Dana ada, Target tercapai, DAN Belum pernah dimainkan di sesi ini
-                            if (typeof danaDarurat !== 'undefined' && danaDarurat > 0 && danaDarurat >= state.targets.danaDarurat && isPlayed !== 'true') {
-                                
-                                // Langsung kunci gemboknya SEBELUM meledakkan kembang api
-                                sessionStorage.setItem('confetti_played', 'true');
-                                
-                                // Baru ledakkan konfeti
-                                window.ledakkanConfetti();
-                                console.log("Confetti meledak sekali saja.");
-                            }
-                        } catch (err) {
-                            console.error("Confetti error:", err);
-                        }
-                    }
-
-                    // --- Blok Dana Ortu ---
-                    if (state.targets.danaOrtu) {
-                        const elOrtuTarget = document.getElementById('lbl-ortu-target');
-                        if (elOrtuTarget) elOrtuTarget.innerText = 'Rp ' + state.targets.danaOrtu.toLocaleString('id-ID');
-                    }
+            if (state.targets) {
+                if (state.targets.danaDarurat) {
+                    const elDaruratTarget = document.getElementById('lbl-darurat-target');
+                    if (elDaruratTarget) elDaruratTarget.innerText = 'Rp ' + state.targets.danaDarurat.toLocaleString('id-ID');
                 }
-            // ----------------------------------------------------
-            
+                if (state.targets.danaOrtu) {
+                    const elOrtuTarget = document.getElementById('lbl-ortu-target');
+                    if (elOrtuTarget) elOrtuTarget.innerText = 'Rp ' + state.targets.danaOrtu.toLocaleString('id-ID');
+                }
+            }
+
             // 5. Update Countdown
             const countdownEl = document.getElementById('nikah-countdown');
             if (countdownEl) {
