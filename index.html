@@ -475,7 +475,8 @@ window.ledakkanConfetti = () => {
             const lblOrtu = document.getElementById('lbl-ortu-terkumpul');
             if (lblOrtu) lblOrtu.innerText = 'Rp ' + danaOrtu.toLocaleString('id-ID');
             // Menampilkan Target Darurat & Ortu dari Firebase ke layar
-            if (state.targets) {
+            // 4. Update Darurat & Ortu (SISTEM ANTI-CRASH)
+                if (typeof state !== 'undefined' && state && state.targets) {
                     
                     // --- Blok Dana Darurat ---
                     if (state.targets.danaDarurat) {
@@ -484,11 +485,9 @@ window.ledakkanConfetti = () => {
                         
                         // --- PELATUK CONFETTI SULTAN ---
                         try {
-                            if (typeof danaDarurat !== 'undefined' && state.targets.danaDarurat) {
-                                if (danaDarurat > 0 && danaDarurat >= state.targets.danaDarurat && !sessionStorage.getItem('ledakan_darurat_selesai')) {
-                                    window.ledakkanConfetti();
-                                    sessionStorage.setItem('ledakan_darurat_selesai', 'true');
-                                }
+                            if (typeof danaDarurat !== 'undefined' && danaDarurat > 0 && danaDarurat >= state.targets.danaDarurat && !sessionStorage.getItem('ledakan_darurat_selesai')) {
+                                window.ledakkanConfetti();
+                                sessionStorage.setItem('ledakan_darurat_selesai', 'true');
                             }
                         } catch (err) {
                             console.log("Confetti skip");
@@ -500,7 +499,7 @@ window.ledakkanConfetti = () => {
                         const elOrtuTarget = document.getElementById('lbl-ortu-target');
                         if (elOrtuTarget) elOrtuTarget.innerText = 'Rp ' + state.targets.danaOrtu.toLocaleString('id-ID');
                     }
-                } // <--- Ini satu-satunya penutup untuk if (state.targets)
+                }
             // ----------------------------------------------------
             
             // 5. Update Countdown
