@@ -483,14 +483,22 @@ window.ledakkanConfetti = () => {
                         const elDaruratTarget = document.getElementById('lbl-darurat-target');
                         if (elDaruratTarget) elDaruratTarget.innerText = 'Rp ' + state.targets.danaDarurat.toLocaleString('id-ID');
                         
-                        // --- PELATUK CONFETTI SULTAN ---
+                        // --- PELATUK CONFETTI SULTAN (GEMBOK SUPER KETAT) ---
                         try {
-                            if (typeof danaDarurat !== 'undefined' && danaDarurat > 0 && danaDarurat >= state.targets.danaDarurat && !sessionStorage.getItem('ledakan_darurat_selesai')) {
+                            const isPlayed = sessionStorage.getItem('confetti_played');
+                            
+                            // Syarat mutlak: Dana ada, Target tercapai, DAN Belum pernah dimainkan di sesi ini
+                            if (typeof danaDarurat !== 'undefined' && danaDarurat > 0 && danaDarurat >= state.targets.danaDarurat && isPlayed !== 'true') {
+                                
+                                // Langsung kunci gemboknya SEBELUM meledakkan kembang api
+                                sessionStorage.setItem('confetti_played', 'true');
+                                
+                                // Baru ledakkan konfeti
                                 window.ledakkanConfetti();
-                                sessionStorage.setItem('ledakan_darurat_selesai', 'true');
+                                console.log("Confetti meledak sekali saja.");
                             }
                         } catch (err) {
-                            console.log("Confetti skip");
+                            console.error("Confetti error:", err);
                         }
                     }
 
