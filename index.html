@@ -479,6 +479,10 @@ window.ledakkanConfetti = () => {
                 if (state.targets.danaDarurat) {
                     const elDaruratTarget = document.getElementById('lbl-darurat-target');
                     if (elDaruratTarget) elDaruratTarget.innerText = 'Rp ' + state.targets.danaDarurat.toLocaleString('id-ID');
+                    // --- PELATUK CONFETTI SULTAN ---
+                if (danaDarurat > 0 && danaDarurat >= state.targets.danaDarurat) {
+                    window.ledakkanConfetti();
+                }
                 }
                 if (state.targets.danaOrtu) {
                     const elOrtuTarget = document.getElementById('lbl-ortu-target');
