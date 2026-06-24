@@ -729,7 +729,7 @@
         window.submitTargets = async (e) => {
             e.preventDefault();
             const tDate = document.getElementById('target-nikah-date').value;
-            const tAmount = parseFloat(document.getElementById('target-nikah-amount').value) || 0;
+            const tAmount = parseFloat(document.getElementById('target-nikah-amount').value.replace(/\./g, '')) || 0;
 
             await saveTargets({ nikahDate: tDate, nikahAmount: tAmount });
 
@@ -1100,16 +1100,21 @@
 
 <body class="bg-gray-900 text-gray-100 font-sans min-h-screen transition-colors duration-500 pb-20 md:pb-0">
 
-    <div id="loading-overlay" class="fixed inset-0 bg-gray-950 z-[100] flex flex-col items-center justify-center transition-opacity duration-700">
-    <div class="relative w-20 h-20 mb-8 flex items-center justify-center">
-        <div class="absolute inset-0 bg-blue-500 rounded-full animate-ping opacity-20"></div>
-        <div class="absolute inset-2 bg-gradient-to-tr from-blue-600 to-emerald-500 rounded-full animate-pulse opacity-40"></div>
-        <i class="fas fa-wallet text-4xl text-gray-100 z-10 animate-bounce-slow"></i>
+    <div id="loading-overlay"
+        class="fixed inset-0 bg-gray-950 z-[100] flex flex-col items-center justify-center transition-opacity duration-700">
+        <div class="relative w-20 h-20 mb-8 flex items-center justify-center">
+            <div class="absolute inset-0 bg-blue-500 rounded-full animate-ping opacity-20"></div>
+            <div
+                class="absolute inset-2 bg-gradient-to-tr from-blue-600 to-emerald-500 rounded-full animate-pulse opacity-40">
+            </div>
+            <i class="fas fa-wallet text-4xl text-gray-100 z-10 animate-bounce-slow"></i>
+        </div>
+
+        <h2
+            class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 tracking-wider mb-2">
+            UNIKY</h2>
+        <p class="text-xs text-gray-400 tracking-[0.2em] uppercase animate-pulse">Membuka Brankas...</p>
     </div>
-    
-    <h2 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 tracking-wider mb-2">UNIKY</h2>
-    <p class="text-xs text-gray-400 tracking-[0.2em] uppercase animate-pulse">Membuka Brankas...</p>
-</div>
 
     <div id="auth-screen" class="fixed inset-0 bg-gray-950 flex items-center justify-center p-4 z-40">
         <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
@@ -1174,7 +1179,8 @@
 
         <div class="max-w-5xl mx-auto p-4 md:p-6 md:flex md:gap-6 mt-4">
 
-            <nav class="md:w-64 shrink-0 fixed bottom-0 left-0 right-0 bg-gray-800 md:bg-transparent md:static border-t border-gray-700 md:border-none z-30 flex md:flex-col justify-start md:justify-start overflow-x-auto scrollbar-hide px-2 md:px-0 gap-2 md:gap-0">
+            <nav
+                class="md:w-64 shrink-0 fixed bottom-0 left-0 right-0 bg-gray-800 md:bg-transparent md:static border-t border-gray-700 md:border-none z-30 flex md:flex-col justify-start md:justify-start overflow-x-auto scrollbar-hide px-2 md:px-0 gap-2 md:gap-0">
 
                 <div class="hidden md:block mb-6 text-center glass-card p-4 rounded-2xl">
                     <img src="./logo.png" alt="Logo UNIKY" class="w-20 h-20 object-contain mx-auto mb-2"
@@ -1419,8 +1425,8 @@
                                 <div>
                                     <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Tanggal</label>
                                     <input type="date" id="tx-date" required
-    class="appearance-none w-full box-border m-0 bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500"
-    style="color-scheme: dark; display: block; width: 100%; min-width: 100%;">
+                                        class="appearance-none w-full box-border m-0 bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500"
+                                        style="color-scheme: dark; display: block; width: 100%; min-width: 100%;">
                                 </div>
                             </div>
                             <div>
@@ -1449,16 +1455,23 @@
                                     <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Tanggal Target
                                         Nikah</label>
                                     <input type="date" id="target-nikah-date"
-    class="appearance-none w-full box-border m-0 bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-yellow-500"
-    style="color-scheme: dark; display: block; width: 100%; min-width: 100%;">
+                                        class="appearance-none w-full box-border m-0 bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-yellow-500"
+                                        style="color-scheme: dark; display: block; width: 100%; min-width: 100%;">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Total Biaya
                                         Dibutuhkan (Rp)</label>
-                                    <input type="number" id="target-nikah-amount" placeholder="Misal: 50000000"
+                                    <!-- Ubah type="number" jadi type="text" dan tambah inputmode="numeric" -->
+                                    <input type="text" inputmode="numeric" id="target-nikah-amount"
+                                        placeholder="Misal: 150.000.000"
                                         class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white font-bold focus:outline-none focus:border-yellow-500">
                                 </div>
                             </div>
+
+                            <!-- TEKS KALKULATOR PINTAR (Sembunyi by default) -->
+                            <p id="kalkulator-target" class="text-sm text-center text-yellow-300 font-medium hidden">
+                                💡 Anda perlu menabung sekitar <b id="hasil-kalkulasi">Rp 0</b> / bulan.
+                            </p>
                             <button type="submit"
                                 class="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-yellow-900/50">Update
                                 Target Nikah</button>
@@ -1553,29 +1566,82 @@
     </div>
 
     <div id="pdf-content" class="hidden absolute top-0 left-0 w-[800px] z-[-1] bg-white text-black"></div>
-<script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const bottomNav = document.querySelector('nav');
-        // Deteksi semua kolom isian
-        const inputElements = document.querySelectorAll('input, select, textarea');
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const bottomNav = document.querySelector('nav');
+            // Deteksi semua kolom isian
+            const inputElements = document.querySelectorAll('input, select, textarea');
 
-        inputElements.forEach(el => {
-          // Saat kolom disentuh (keyboard muncul)
-          el.addEventListener('focus', () => {
-            if (window.innerWidth < 768) { // Hanya berlaku di layar HP
-              bottomNav.classList.add('hidden');
-            }
-          });
-          
-          // Saat selesai ngetik (keyboard hilang)
-          el.addEventListener('blur', () => {
-            if (window.innerWidth < 768) {
-              setTimeout(() => {
-                bottomNav.classList.remove('hidden');
-              }, 150); // Jeda 150ms biar mulus turunnya
-            }
-          });
+            inputElements.forEach(el => {
+                // Saat kolom disentuh (keyboard muncul)
+                el.addEventListener('focus', () => {
+                    if (window.innerWidth < 768) { // Hanya berlaku di layar HP
+                        bottomNav.classList.add('hidden');
+                    }
+                });
+
+                // Saat selesai ngetik (keyboard hilang)
+                el.addEventListener('blur', () => {
+                    if (window.innerWidth < 768) {
+                        setTimeout(() => {
+                            bottomNav.classList.remove('hidden');
+                        }, 150); // Jeda 150ms biar mulus turunnya
+                    }
+                });
+            });
         });
+    </script>
+    <!-- JURUS KALKULATOR TARGET & FORMAT RUPIAH -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const dateInput = document.getElementById('target-nikah-date');
+        const amountInput = document.getElementById('target-nikah-amount');
+        const calcText = document.getElementById('kalkulator-target');
+        const calcResult = document.getElementById('hasil-kalkulasi');
+
+        // Fungsi Format Rupiah saat ngetik
+        amountInput.addEventListener('input', function(e) {
+          // Hapus semua huruf/simbol, sisakan angka
+          let rawValue = this.value.replace(/[^0-9]/g, '');
+          // Kasih titik setiap 3 angka
+          this.value = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          hitungBebanBulanan(); // Langsung hitung otomatis!
+        });
+
+        // Hitung ulang kalau tanggal diganti
+        dateInput.addEventListener('change', hitungBebanBulanan);
+
+        function hitungBebanBulanan() {
+          // Ambil angka asli tanpa titik
+          const targetAngka = parseFloat(amountInput.value.replace(/\./g, ''));
+          const targetTanggal = new Date(dateInput.value);
+          const hariIni = new Date();
+
+          // Kalau form kosong atau tanggalnya di masa lalu, sembunyikan kalkulator
+          if (!targetAngka || isNaN(targetAngka) || !dateInput.value || targetTanggal <= hariIni) {
+            calcText.classList.add('hidden');
+            return;
+          }
+
+          // Hitung selisih bulan
+          let selisihBulan = (targetTanggal.getFullYear() - hariIni.getFullYear()) * 12;
+          selisihBulan -= hariIni.getMonth();
+          selisihBulan += targetTanggal.getMonth();
+          
+          if (selisihBulan <= 0) selisihBulan = 1; // Minimal 1 bulan biar nggak error bagi nol
+
+          // Rumus: Total Biaya dibagi Sisa Bulan
+          const bebanPerBulan = targetAngka / selisihBulan;
+
+          // Format hasil bagi ke Rupiah
+          const formatRupiah = new Intl.NumberFormat('id-ID', { 
+            style: 'currency', currency: 'IDR', minimumFractionDigits: 0 
+          }).format(bebanPerBulan);
+
+          // Tampilkan ke layar!
+          calcResult.innerHTML = `${formatRupiah}`;
+          calcText.classList.remove('hidden');
+        }
       });
     </script>
 </body>
