@@ -780,11 +780,13 @@
                 style: 'currency', currency: 'IDR', minimumFractionDigits: 0 
             }).format(cleanAngka);
             
-            // Update tampilan di layar secara instan
+            // Update tampilan di layar secara instan & Simpan ke Firebase
             if (jenis === 'darurat') {
                 document.getElementById('lbl-darurat-terkumpul').innerText = formatRp;
+                await saveTargets({ danaDarurat: cleanAngka }); // <-- Menyimpan Darurat ke awan
             } else {
                 document.getElementById('lbl-ortu-terkumpul').innerText = formatRp;
+                await saveTargets({ danaOrtu: cleanAngka }); // <-- Menyimpan Ortu ke awan
             }
 
             // Notifikasi Sukses
