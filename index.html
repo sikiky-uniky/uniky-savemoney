@@ -188,6 +188,60 @@
             }
         };
 
+        window.simpanPengeluaran = async () => {
+        // 1. Ambil nilai input
+        const nominalRaw = document.getElementById('input-nominal-keluar').value;
+        const nominal = parseInt(nominalRaw);
+        const keterangan = document.getElementById('input-keterangan-keluar').value;
+
+        if(!nominal || !keterangan) {
+            alert("Peringatan: Isi nominal dan keterangannya! Jangan membohongi diri sendiri.");
+            return;
+        }
+
+        // 2. Hambatan Psikologis Final
+        const formatRupiah = nominal.toLocaleString('id-ID');
+        const yakin = confirm(`PERINGATAN FINAL!\n\nKamu yakin mau MEMBUANG Rp ${formatRupiah} untuk:\n"${keterangan}"?\n\nTekan OK jika kamu rela uang ini hilang dari masa depanmu.`);
+        
+        if (!yakin) {
+            alert("Keputusan cerdas. Masa depanmu dan uangmu aman.");
+            return;
+        }
+
+        // 3. Eksekusi ke Database Firebase
+        try {
+            console.log("Menambahkan data pengeluaran ekstrem...");
+            
+            // Buat ID unik dari waktu sekarang
+            const txId = Date.now().toString();
+            
+            // Tembak langsung ke alamat brankas transaksi yang kita temukan tadi
+            // Kita gunakan 'doc' dan 'setDoc' yang sudah tersedia di scope modul ini
+            const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+            const newTxRef = doc(state.db, 'artifacts', state.appId, 'users', state.userId, 'transactions', txId);
+            
+            await setDoc(newTxRef, {
+                type: 'expense',
+                amount: nominal,
+                category: 'Lain-lain',
+                description: "[EKSTREM] " + keterangan,
+                date: new Date().toISOString().split('T')[0],
+                timestamp: Date.now()
+            });
+
+            alert(`Tercatat! Rp ${formatRupiah} resmi HANGUS.\n\nSistem telah otomatis memotong saldomu.`);
+            
+            // Tutup modal popup merahnya
+            if (typeof tutupModalPengeluaran === "function") {
+                tutupModalPengeluaran();
+            }
+
+        } catch (error) {
+            console.error("Gagal mencatat pengeluaran:", error);
+            alert("Terjadi kesalahan sistem saat menghubungi Firebase. Coba lagi.");
+        }
+    };
+
         const fetchData = () => {
             if (!state.userId || !state.db) return;
 
@@ -1704,21 +1758,6 @@
             document.getElementById('input-keterangan-keluar').value = '';
         }
 
-        function simpanPengeluaran() {
-            const nominal = document.getElementById('input-nominal-keluar').value;
-            const keterangan = document.getElementById('input-keterangan-keluar').value;
-
-            // Cek apakah ada yang kosong
-            if (!nominal || !keterangan) {
-                alert("Peringatan: Isi nominal dan keterangannya! Jangan membohongi diri sendiri.");
-                return;
-            }
-
-            // Untuk sementara kita pakai alert dulu sebelum disambung ke Firebase
-            alert(`Tercatat! Uang sebesar Rp ${nominal} telah HANGUS untuk: ${keterangan}. \n\nJadikan ini pengingat rasa sakitnya.`);
-
-            tutupModalPengeluaran();
-        }
         document.addEventListener('DOMContentLoaded', () => {
             const bottomNav = document.querySelector('nav');
             // Deteksi semua kolom isian
