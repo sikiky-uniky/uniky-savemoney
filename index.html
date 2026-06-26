@@ -216,12 +216,19 @@
         const txId = Date.now().toString();
         const newTxRef = doc(state.db, 'artifacts', state.appId, 'users', state.userId, 'transactions', txId);
         
+        // Buat tanggal lokal yang akurat
+        const now = new Date();
+        const tahun = now.getFullYear();
+        const bulan = String(now.getMonth() + 1).padStart(2, '0');
+        const tanggal = String(now.getDate()).padStart(2, '0');
+        const tanggalLokal = `${tahun}-${bulan}-${tanggal}`;
+
         await setDoc(newTxRef, {
             type: 'expense',
             amount: nominal,
             category: 'Lain-lain', 
-            note: keterangan, // <--- INI YANG KITA UBAH AGAR MUNCUL DI RIWAYAT
-            date: new Date().toISOString().split('T')[0],
+            note: keterangan, 
+            date: tanggalLokal, // <--- Sekarang pakai tanggal lokal biar gak delay
             timestamp: Date.now()
         });
 
