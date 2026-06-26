@@ -189,41 +189,29 @@
         };
 
         window.simpanPengeluaran = async () => {
-    // 1. Ambil nilai input
     const nominalRaw = document.getElementById('input-nominal-keluar').value;
-    // FIX: Hapus semua titik dulu agar jadi angka murni
     const nominal = parseInt(nominalRaw.replace(/\./g, ''));
     const keterangan = document.getElementById('input-keterangan-keluar').value;
 
     if(!nominal || !keterangan) {
-        Swal.fire('Oops!', 'Isi nominal dan keterangannya dulu!', 'error');
+        Swal.fire('Oops!', 'Isi nominal dan keterangannya dulu!', 'warning');
         return;
     }
 
-    // 2. Upgrade ke SweetAlert2 (Jauh lebih cantik!)
     const formatRupiah = nominal.toLocaleString('id-ID');
-    
     const result = await Swal.fire({
         title: 'PERINGATAN FINAL!',
-        html: `Kamu yakin mau <b>MEMBUANG Rp ${formatRupiah}</b> untuk:<br>"${keterangan}"?<br><br>Tekan OK jika kamu rela uang ini hilang dari masa depanmu.`,
+        html: `Yakin mau membuang <b>Rp ${formatRupiah}</b> untuk:<br>"${keterangan}"?`,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#dc2626', // Warna merah ala Tailwind
-        cancelButtonColor: '#374151',
+        confirmButtonColor: '#dc2626',
         confirmButtonText: 'Ya, Buang Uang Ini!',
-        cancelButtonText: 'Batal (Simpan Uang)'
+        cancelButtonText: 'Batal'
     });
     
-    if (!result.isConfirmed) {
-        Swal.fire('Keputusan Cerdas', 'Masa depanmu dan uangmu aman.', 'success');
-        return;
-    }
+    if (!result.isConfirmed) return;
 
-    // 3. Eksekusi ke Database Firebase
     try {
-        console.log("Menambahkan data pengeluaran ekstrem...");
-        
-        // ... (sisanya kodingan Firebase Mas tetap sama seperti tadi)
         const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
         const txId = Date.now().toString();
         const newTxRef = doc(state.db, 'artifacts', state.appId, 'users', state.userId, 'transactions', txId);
@@ -231,8 +219,8 @@
         await setDoc(newTxRef, {
             type: 'expense',
             amount: nominal,
-            category: 'Lain-lain',
-            description: "[EKSTREM] " + keterangan,
+            category: 'Lain-lain', 
+            note: keterangan, // <--- INI YANG KITA UBAH AGAR MUNCUL DI RIWAYAT
             date: new Date().toISOString().split('T')[0],
             timestamp: Date.now()
         });
@@ -243,7 +231,7 @@
 
     } catch (error) {
         console.error("Gagal:", error);
-        Swal.fire('Error', 'Sistem gagal tersambung ke Firebase.', 'error');
+        Swal.fire('Error', 'Sistem gagal tersambung.', 'error');
     }
 };
 
