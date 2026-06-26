@@ -1601,78 +1601,82 @@
                 </div> <!-- PENUTUP VIEW-TARGET YANG HILANG -->
 
                 <div id="view-laporan" class="tab-content hidden space-y-6 animasi-masuk">
-                            <div class="glass-card p-6 rounded-2xl">
-                                <div
-                                    class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                                    <h2 class="text-2xl font-black"><i class="fas fa-chart-pie text-blue-400"></i>
-                                        Analitik
-                                        Pengeluaran</h2>
-                                    <div class="flex gap-2 w-full md:w-auto">
-                                        <button onclick="exportData('excel')"
-                                            class="flex-1 md:flex-none bg-green-700 hover:bg-green-600 text-white text-xs font-bold py-2 px-4 rounded transition"><i
-                                                class="fas fa-file-excel mr-1"></i> Excel</button>
-                                        <button onclick="exportData('pdf')"
-                                            class="flex-1 md:flex-none bg-red-700 hover:bg-red-600 text-white text-xs font-bold py-2 px-4 rounded transition"><i
-                                                class="fas fa-file-pdf mr-1"></i> PDF</button>
-                                        <button onclick="exportData('json')"
-                                            class="flex-1 md:flex-none bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold py-2 px-4 rounded transition"><i
-                                                class="fas fa-file-code mr-1"></i> JSON</button>
-                                    </div>
-                                </div>
-
-                                <div class="w-full md:w-2/3 mx-auto aspect-square md:aspect-video relative">
-                                    <canvas id="pieChart"></canvas>
-                                </div>
+                    <div class="glass-card p-6 rounded-2xl">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                            <h2 class="text-2xl font-black"><i class="fas fa-chart-pie text-blue-400"></i>
+                                Analitik
+                                Pengeluaran</h2>
+                            <div class="flex gap-2 w-full md:w-auto">
+                                <button onclick="exportData('excel')"
+                                    class="flex-1 md:flex-none bg-green-700 hover:bg-green-600 text-white text-xs font-bold py-2 px-4 rounded transition"><i
+                                        class="fas fa-file-excel mr-1"></i> Excel</button>
+                                <button onclick="exportData('pdf')"
+                                    class="flex-1 md:flex-none bg-red-700 hover:bg-red-600 text-white text-xs font-bold py-2 px-4 rounded transition"><i
+                                        class="fas fa-file-pdf mr-1"></i> PDF</button>
+                                <button onclick="exportData('json')"
+                                    class="flex-1 md:flex-none bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold py-2 px-4 rounded transition"><i
+                                        class="fas fa-file-code mr-1"></i> JSON</button>
                             </div>
                         </div>
+                        <!-- Tombol Pemicu Modal Pengeluaran -->
+                        <button onclick="bukaModalPengeluaran()"
+                            class="w-full bg-red-900/40 border border-red-500/70 text-red-400 font-bold py-3 px-4 rounded-xl hover:bg-red-600 hover:text-white transition-all flex items-center justify-center gap-2 mt-4 mb-6 shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+                            <i class="fas fa-minus-circle"></i> Catat Pengeluaran Ekstrem
+                        </button>
 
-                        <div id="view-simulasi" class="tab-content hidden space-y-6 animasi-masuk">
-                            <div class="glass-card p-6 rounded-2xl relative overflow-hidden">
-                                <div class="absolute top-0 right-0 p-4 opacity-10">
-                                    <i class="fas fa-magic text-9xl"></i>
-                                </div>
-                                <h2 class="text-2xl font-black mb-2"><i class="fas fa-calculator text-blue-400"></i>
-                                    Simulator
-                                    Hemat</h2>
-                                <p class="text-sm text-gray-400 mb-6">Lihat apa yang terjadi jika kamu mengurangi
-                                    pengeluaran
-                                    harian ini.</p>
+                        <div class="w-full md:w-2/3 mx-auto aspect-square md:aspect-video relative">
+                            <canvas id="pieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
 
-                                <div class="space-y-4 relative z-10">
-                                    <div>
-                                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi
-                                            Jajan/Cemilan (Rp/Hari)</label>
-                                        <input type="text" inputmode="numeric" id="sim-jajan" value="20000"
-                                            class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi
-                                            Kopi/Minuman
-                                            Kekinian (Rp/Hari)</label>
-                                        <input type="text" inputmode="numeric" id="sim-kopi" value="15000"
-                                            class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi
-                                            Rokok
-                                            (Rp/Hari)</label>
-                                        <input type="text" inputmode="numeric" id="sim-rokok" value="0"
-                                            class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
-                                    </div>
+                <div id="view-simulasi" class="tab-content hidden space-y-6 animasi-masuk">
+                    <div class="glass-card p-6 rounded-2xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-10">
+                            <i class="fas fa-magic text-9xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-black mb-2"><i class="fas fa-calculator text-blue-400"></i>
+                            Simulator
+                            Hemat</h2>
+                        <p class="text-sm text-gray-400 mb-6">Lihat apa yang terjadi jika kamu mengurangi
+                            pengeluaran
+                            harian ini.</p>
 
-                                    <div
-                                        class="mt-8 p-6 bg-gradient-to-br from-green-900/60 to-emerald-900/40 rounded-xl border border-green-500/30 text-center shadow-lg">
-                                        <p class="text-gray-300 text-sm font-bold mb-2">Jika kamu konsisten, dalam 1
-                                            Tahun kamu
-                                            akan memiliki tambahan:</p>
-                                        <p id="sim-result" class="text-4xl font-black text-green-400 mb-2">Rp 0</p>
-                                        <p id="sim-days"
-                                            class="text-sm text-yellow-400 font-bold bg-yellow-900/30 inline-block px-3 py-1 rounded">
-                                        </p>
-                                    </div>
-                                </div>
+                        <div class="space-y-4 relative z-10">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi
+                                    Jajan/Cemilan (Rp/Hari)</label>
+                                <input type="text" inputmode="numeric" id="sim-jajan" value="20000"
+                                    class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi
+                                    Kopi/Minuman
+                                    Kekinian (Rp/Hari)</label>
+                                <input type="text" inputmode="numeric" id="sim-kopi" value="15000"
+                                    class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Kurangi
+                                    Rokok
+                                    (Rp/Hari)</label>
+                                <input type="text" inputmode="numeric" id="sim-rokok" value="0"
+                                    class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                            </div>
+
+                            <div
+                                class="mt-8 p-6 bg-gradient-to-br from-green-900/60 to-emerald-900/40 rounded-xl border border-green-500/30 text-center shadow-lg">
+                                <p class="text-gray-300 text-sm font-bold mb-2">Jika kamu konsisten, dalam 1
+                                    Tahun kamu
+                                    akan memiliki tambahan:</p>
+                                <p id="sim-result" class="text-4xl font-black text-green-400 mb-2">Rp 0</p>
+                                <p id="sim-days"
+                                    class="text-sm text-yellow-400 font-bold bg-yellow-900/30 inline-block px-3 py-1 rounded">
+                                </p>
                             </div>
                         </div>
+                    </div>
+                </div>
 
             </main>
         </div>
@@ -1680,6 +1684,41 @@
 
     <div id="pdf-content" class="hidden absolute top-0 left-0 w-[800px] z-[-1] bg-white text-black"></div>
     <script>
+        // ==========================================
+        // MESIN MODAL PENGELUARAN EKSTREM
+        // ==========================================
+
+        function bukaModalPengeluaran() {
+            const modal = document.getElementById('modal-pengeluaran');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function tutupModalPengeluaran() {
+            const modal = document.getElementById('modal-pengeluaran');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+
+            // Mengosongkan form saat ditutup agar tidak ada jejak
+            document.getElementById('input-nominal-keluar').value = '';
+            document.getElementById('input-keterangan-keluar').value = '';
+        }
+
+        function simpanPengeluaran() {
+            const nominal = document.getElementById('input-nominal-keluar').value;
+            const keterangan = document.getElementById('input-keterangan-keluar').value;
+
+            // Cek apakah ada yang kosong
+            if (!nominal || !keterangan) {
+                alert("Peringatan: Isi nominal dan keterangannya! Jangan membohongi diri sendiri.");
+                return;
+            }
+
+            // Untuk sementara kita pakai alert dulu sebelum disambung ke Firebase
+            alert(`Tercatat! Uang sebesar Rp ${nominal} telah HANGUS untuk: ${keterangan}. \n\nJadikan ini pengingat rasa sakitnya.`);
+
+            tutupModalPengeluaran();
+        }
         document.addEventListener('DOMContentLoaded', () => {
             const bottomNav = document.querySelector('nav');
             // Deteksi semua kolom isian
@@ -1776,6 +1815,57 @@
             }
         });
     </script>
+    <!-- MODAL INPUT PENGELUARAN EKSTREM -->
+    <div id="modal-pengeluaran"
+        class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity animasi-masuk">
+        <div
+            class="bg-gray-900 border border-red-500/50 rounded-2xl w-11/12 max-w-md p-6 relative shadow-[0_0_30px_rgba(239,68,68,0.2)]">
+
+            <!-- Tombol Close -->
+            <button onclick="tutupModalPengeluaran()"
+                class="absolute top-4 right-4 text-gray-500 hover:text-red-400 transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+
+            <!-- Header Modal -->
+            <div class="text-center mb-6">
+                <div
+                    class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-500/20 text-red-500 mb-3">
+                    <i class="fas fa-arrow-down text-xl"></i>
+                </div>
+                <h2 class="text-xl font-bold text-white">Catat Pengeluaran</h2>
+                <p class="text-xs text-red-400 mt-1 font-medium tracking-wide">PERINGATAN: Saldo akan berkurang!</p>
+            </div>
+
+            <!-- Form Input -->
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs text-gray-400 uppercase tracking-wider mb-2">Nominal (Rp)</label>
+                    <input type="number" id="input-nominal-keluar" placeholder="Contoh: 50000"
+                        class="w-full bg-gray-800 border border-gray-700 text-white text-lg rounded-lg px-4 py-3 focus:outline-none focus:border-red-500 transition-colors">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-gray-400 uppercase tracking-wider mb-2">Untuk Keperluan
+                        Apa?</label>
+                    <input type="text" id="input-keterangan-keluar" placeholder="Contoh: Makan Siang / Bayar Hutang"
+                        class="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-red-500 transition-colors">
+                </div>
+            </div>
+
+            <!-- Tombol Aksi -->
+            <div class="mt-8 space-y-3">
+                <button onclick="simpanPengeluaran()"
+                    class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition-colors shadow-lg shadow-red-600/30 flex justify-center items-center gap-2">
+                    <i class="fas fa-fire"></i> BUANG UANG INI
+                </button>
+                <button onclick="tutupModalPengeluaran()"
+                    class="w-full bg-transparent border border-gray-700 text-gray-400 hover:text-white hover:bg-gray-800 font-bold py-3 rounded-lg transition-colors">
+                    Batal (Simpan Uangku)
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
