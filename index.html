@@ -221,35 +221,36 @@
         }
         
         const rasioEl = document.getElementById('rapor-rasio');
-        // Tipografi ala poster: Angka raksasa, tanda persennya dibikin elegan
-        rasioEl.innerHTML = `${rasio}<span class="text-xl text-gray-500 ml-1">%</span>`;
-
-        // Efek Visual "Cinematic Glowing" sesuai tingkat keborosan
-        if (rasio > 50) {
-            // Merah menyala + glowing untuk rasio kritis
-            rasioEl.className = "text-4xl font-black mt-2 text-red-500 drop-shadow-[0_0_12px_rgba(239,68,68,0.8)]";
-        } else if (rasio > 20) {
-            // Kuning awas + glowing
-            rasioEl.className = "text-4xl font-black mt-2 text-yellow-500 drop-shadow-[0_0_12px_rgba(234,179,8,0.8)]";
-        } else {
-            // Hijau aman + glowing
-            rasioEl.className = "text-4xl font-black mt-2 text-emerald-400 drop-shadow-[0_0_12px_rgba(52,211,153,0.8)]";
-        }
-
-        // 5. Evaluasi "Verdict" (Tamparan Realita)
         const verdictEl = document.getElementById('rapor-verdict');
+
+        // 5. Evaluasi "Verdict" & Efek Visual Ultra-Cinematic
         if (sisaAngka < 0) {
+            rasioEl.innerHTML = `${rasio}<span class="text-4xl text-red-700 ml-2">%</span>`;
+            rasioEl.className = "text-7xl font-black mt-2 text-red-600 drop-shadow-[0_0_35px_rgba(220,38,38,1)] animate-pulse";
+            
             verdictEl.innerText = "MINUS! PUASA JAJAN!";
-            verdictEl.className = "text-xl font-black mt-1 text-red-600 animate-pulse";
+            verdictEl.className = "text-2xl font-black mt-2 text-red-600 drop-shadow-[0_0_20px_rgba(220,38,38,0.9)] animate-bounce";
         } else if (rasio > 50) {
+            // KRITIS - Merah Menyala Raksasa Berdenyut
+            rasioEl.innerHTML = `${rasio}<span class="text-4xl text-red-700 ml-2">%</span>`;
+            rasioEl.className = "text-7xl font-black mt-2 text-red-500 drop-shadow-[0_0_35px_rgba(239,68,68,1)] animate-pulse";
+            
             verdictEl.innerText = "KRITIS BANYAK GAYA";
-            verdictEl.className = "text-xl font-black mt-1 text-red-500";
+            verdictEl.className = "text-2xl font-black mt-3 text-red-500 drop-shadow-[0_0_20px_rgba(239,68,68,0.8)]";
         } else if (rasio > 20) {
+            // AWAS - Kuning Neon
+            rasioEl.innerHTML = `${rasio}<span class="text-3xl text-yellow-700 ml-2">%</span>`;
+            rasioEl.className = "text-6xl font-black mt-2 text-yellow-500 drop-shadow-[0_0_25px_rgba(234,179,8,1)]";
+            
             verdictEl.innerText = "AWAS BOCOR HALUS";
-            verdictEl.className = "text-xl font-black mt-1 text-yellow-500";
+            verdictEl.className = "text-xl font-black mt-3 text-yellow-500 drop-shadow-[0_0_15px_rgba(234,179,8,0.8)]";
         } else {
+            // AMAN - Hijau Elegan
+            rasioEl.innerHTML = `${rasio}<span class="text-3xl text-emerald-700 ml-2">%</span>`;
+            rasioEl.className = "text-6xl font-black mt-2 text-emerald-400 drop-shadow-[0_0_25px_rgba(52,211,153,1)]";
+            
             verdictEl.innerText = "SANGAT DISIPLIN 🔥";
-            verdictEl.className = "text-xl font-black mt-1 text-emerald-400";
+            verdictEl.className = "text-xl font-black mt-3 text-emerald-400 drop-shadow-[0_0_15px_rgba(52,211,153,0.8)]";
         }
     };
     
