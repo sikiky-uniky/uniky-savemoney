@@ -219,7 +219,22 @@
         if (totalAmunisi > 0) {
             rasio = Math.round((terbuangAngka / totalAmunisi) * 100);
         }
-        document.getElementById('rapor-rasio').innerText = `${rasio} %`;
+        
+        const rasioEl = document.getElementById('rapor-rasio');
+        // Tipografi ala poster: Angka raksasa, tanda persennya dibikin elegan
+        rasioEl.innerHTML = `${rasio}<span class="text-xl text-gray-500 ml-1">%</span>`;
+
+        // Efek Visual "Cinematic Glowing" sesuai tingkat keborosan
+        if (rasio > 50) {
+            // Merah menyala + glowing untuk rasio kritis
+            rasioEl.className = "text-4xl font-black mt-2 text-red-500 drop-shadow-[0_0_12px_rgba(239,68,68,0.8)]";
+        } else if (rasio > 20) {
+            // Kuning awas + glowing
+            rasioEl.className = "text-4xl font-black mt-2 text-yellow-500 drop-shadow-[0_0_12px_rgba(234,179,8,0.8)]";
+        } else {
+            // Hijau aman + glowing
+            rasioEl.className = "text-4xl font-black mt-2 text-emerald-400 drop-shadow-[0_0_12px_rgba(52,211,153,0.8)]";
+        }
 
         // 5. Evaluasi "Verdict" (Tamparan Realita)
         const verdictEl = document.getElementById('rapor-verdict');
