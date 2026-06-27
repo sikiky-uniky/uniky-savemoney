@@ -188,59 +188,76 @@
             }
         };
 
-        window.simpanPengeluaran = async () => {
-    const nominalRaw = document.getElementById('input-nominal-keluar').value;
-    const nominal = parseInt(nominalRaw.replace(/\./g, ''));
-    const keterangan = document.getElementById('input-keterangan-keluar').value;
+        // Fungsi Menutup Rapor
+    window.tutupRapor = () => {
+        document.getElementById('modal-rapor').classList.add('hidden');
+    };
 
-    if(!nominal || !keterangan) {
-        Swal.fire('Oops!', 'Isi nominal dan keterangannya dulu!', 'warning');
-        return;
-    }
-
-    const formatRupiah = nominal.toLocaleString('id-ID');
-    const result = await Swal.fire({
-        title: 'PERINGATAN FINAL!',
-        html: `Yakin mau membuang <b>Rp ${formatRupiah}</b> untuk:<br>"${keterangan}"?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc2626',
-        confirmButtonText: 'Ya, Buang Uang Ini!',
-        cancelButtonText: 'Batal'
-    });
+    // Fungsi Membuka Rapor
+    window.bukaRapor = () => {
+        const modal = document.getElementById('modal-rapor');
+        modal.classList.remove('hidden');
+        
+        // (SEMENTARA) Kita isi dengan angka *dummy* dulu untuk testing visual.
+        document.getElementById('rapor-terbuang').innerText = "MENGHITUNG...";
+        document.getElementById('rapor-sisa').innerText = "MENGHITUNG...";
+        document.getElementById('rapor-rasio').innerText = "? %";
+        document.getElementById('rapor-verdict').innerText = "MENGANALISIS...";
+    };
     
-    if (!result.isConfirmed) return;
+        window.simpanPengeluaran = async () => {
+            const nominalRaw = document.getElementById('input-nominal-keluar').value;
+            const nominal = parseInt(nominalRaw.replace(/\./g, ''));
+            const keterangan = document.getElementById('input-keterangan-keluar').value;
 
-    try {
-        const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
-        const txId = Date.now().toString();
-        const newTxRef = doc(state.db, 'artifacts', state.appId, 'users', state.userId, 'transactions', txId);
-        
-        // Buat tanggal lokal yang akurat
-        const now = new Date();
-        const tahun = now.getFullYear();
-        const bulan = String(now.getMonth() + 1).padStart(2, '0');
-        const tanggal = String(now.getDate()).padStart(2, '0');
-        const tanggalLokal = `${tahun}-${bulan}-${tanggal}`;
+            if (!nominal || !keterangan) {
+                Swal.fire('Oops!', 'Isi nominal dan keterangannya dulu!', 'warning');
+                return;
+            }
 
-        await setDoc(newTxRef, {
-            type: 'expense',
-            amount: nominal,
-            category: 'Lain-lain', 
-            note: keterangan, 
-            date: tanggalLokal, // <--- Sekarang pakai tanggal lokal biar gak delay
-            timestamp: Date.now()
-        });
+            const formatRupiah = nominal.toLocaleString('id-ID');
+            const result = await Swal.fire({
+                title: 'PERINGATAN FINAL!',
+                html: `Yakin mau membuang <b>Rp ${formatRupiah}</b> untuk:<br>"${keterangan}"?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                confirmButtonText: 'Ya, Buang Uang Ini!',
+                cancelButtonText: 'Batal'
+            });
 
-        await Swal.fire('Tercatat!', `Rp ${formatRupiah} resmi HANGUS.`, 'success');
-        
-        if (typeof tutupModalPengeluaran === "function") tutupModalPengeluaran();
+            if (!result.isConfirmed) return;
 
-    } catch (error) {
-        console.error("Gagal:", error);
-        Swal.fire('Error', 'Sistem gagal tersambung.', 'error');
-    }
-};
+            try {
+                const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+                const txId = Date.now().toString();
+                const newTxRef = doc(state.db, 'artifacts', state.appId, 'users', state.userId, 'transactions', txId);
+
+                // Buat tanggal lokal yang akurat
+                const now = new Date();
+                const tahun = now.getFullYear();
+                const bulan = String(now.getMonth() + 1).padStart(2, '0');
+                const tanggal = String(now.getDate()).padStart(2, '0');
+                const tanggalLokal = `${tahun}-${bulan}-${tanggal}`;
+
+                await setDoc(newTxRef, {
+                    type: 'expense',
+                    amount: nominal,
+                    category: 'Lain-lain',
+                    note: keterangan,
+                    date: tanggalLokal, // <--- Sekarang pakai tanggal lokal biar gak delay
+                    timestamp: Date.now()
+                });
+
+                await Swal.fire('Tercatat!', `Rp ${formatRupiah} resmi HANGUS.`, 'success');
+
+                if (typeof tutupModalPengeluaran === "function") tutupModalPengeluaran();
+
+            } catch (error) {
+                console.error("Gagal:", error);
+                Swal.fire('Error', 'Sistem gagal tersambung.', 'error');
+            }
+        };
 
         const fetchData = () => {
             if (!state.userId || !state.db) return;
@@ -1302,6 +1319,10 @@
     </div>
 
     <div id="main-app" class="hidden">
+        <!-- TOMBOL MELAYANG RAPOR KEUANGAN -->
+    <button onclick="bukaRapor()" class="fixed bottom-8 right-8 z-40 bg-gradient-to-r from-indigo-600 to-blue-500 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-[0_0_30px_rgba(79,70,229,0.5)] hover:scale-110 hover:shadow-[0_0_40px_rgba(79,70,229,0.8)] transition-all duration-300 group">
+        <i class="fas fa-file-invoice-dollar text-2xl group-hover:animate-bounce"></i>
+    </button>
         <div id="anti-boros-warning"
             class="hidden bg-red-600 text-white p-3 text-center font-bold sticky top-0 z-40 shadow-lg shadow-red-900/50">
             <i class="fas fa-exclamation-triangle animate-bounce-slow inline-block"></i>
@@ -1854,6 +1875,68 @@
             }
         });
     </script>
+    <!-- ==========================================
+     MODAL RAPOR KEUANGAN (POSTER STATISTIK)
+    =========================================== -->
+    <div id="modal-rapor"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity duration-300">
+        <div
+            class="bg-gray-900 border-2 border-gray-700 w-full max-w-md rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.8)] transform transition-transform scale-95 scale-100">
+
+            <!-- Header Rapor -->
+            <div class="bg-gradient-to-b from-blue-900/50 to-gray-900 p-6 text-center border-b border-gray-800">
+                <h2 class="text-3xl font-black text-white tracking-widest uppercase mb-1">Performa Juni</h2>
+                <p class="text-xs text-blue-400 font-bold tracking-[0.2em]">STATISTIK KEUANGAN UNIKY</p>
+            </div>
+
+            <!-- Body / Statistik Utama -->
+            <div class="p-6 space-y-6">
+
+                <!-- Baris 1: Uang Terbuang (Red Zone) -->
+                <div class="bg-red-950/30 border border-red-900/50 rounded-xl p-4 text-center relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 opacity-10">
+                        <i class="fas fa-skull text-6xl text-red-500"></i>
+                    </div>
+                    <p class="text-xs text-red-400 font-bold uppercase tracking-wider mb-1">Uang Terbuang (Toxic)</p>
+                    <h3 id="rapor-terbuang" class="text-3xl font-black text-red-500">-</h3>
+                    <p class="text-[10px] text-gray-500 mt-2">Jajan, Rokok, Kopi, dsb.</p>
+                </div>
+
+                <!-- Baris 2: Uang Bertahan (Green Zone) -->
+                <div
+                    class="bg-emerald-950/30 border border-emerald-900/50 rounded-xl p-4 text-center relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 opacity-10">
+                        <i class="fas fa-shield-alt text-6xl text-emerald-500"></i>
+                    </div>
+                    <p class="text-xs text-emerald-400 font-bold uppercase tracking-wider mb-1">Sisa Amunisi (Aman)</p>
+                    <h3 id="rapor-sisa" class="text-3xl font-black text-emerald-400">-</h3>
+                    <p class="text-[10px] text-gray-500 mt-2">Siap dideploy ke Tabungan Nikah.</p>
+                </div>
+
+                <!-- Baris 3: Skor Keputusan -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gray-800 rounded-xl p-3 text-center border border-gray-700">
+                        <p class="text-[10px] text-gray-400 font-bold uppercase">Rasio Gagal</p>
+                        <p id="rapor-rasio" class="text-xl font-black text-white mt-1">-</p>
+                    </div>
+                    <div class="bg-gray-800 rounded-xl p-3 text-center border border-gray-700">
+                        <p class="text-[10px] text-gray-400 font-bold uppercase">Verdict</p>
+                        <p id="rapor-verdict" class="text-xl font-black text-yellow-500 mt-1">-</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer Action -->
+            <div class="p-4 bg-gray-950 border-t border-gray-800">
+                <button onclick="tutupRapor()"
+                    class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 rounded-lg transition-colors border border-gray-600 text-sm tracking-wider uppercase">
+                    Tutup Analisis
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL INPUT PENGELUARAN EKSTREM -->
     <div id="modal-pengeluaran"
         class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity animasi-masuk">
