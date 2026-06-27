@@ -193,16 +193,49 @@
         document.getElementById('modal-rapor').classList.add('hidden');
     };
 
-    // Fungsi Membuka Rapor
+    // Fungsi Membuka Rapor (VERSI LIVE DATA FINAL)
     window.bukaRapor = () => {
         const modal = document.getElementById('modal-rapor');
         modal.classList.remove('hidden');
         
-        // (SEMENTARA) Kita isi dengan angka *dummy* dulu untuk testing visual.
-        document.getElementById('rapor-terbuang').innerText = "MENGHITUNG...";
-        document.getElementById('rapor-sisa').innerText = "MENGHITUNG...";
-        document.getElementById('rapor-rasio').innerText = "? %";
-        document.getElementById('rapor-verdict').innerText = "MENGANALISIS...";
+        // 1. Sedot data langsung dari ID asli Dashboard
+        const sisaPakaiText = document.getElementById('lbl-sisa').innerText || "Rp 0";
+        const terbuangText = document.getElementById('lbl-terbuang').innerText || "Rp 0";
+
+        // 2. Lempar angkanya ke Modal Rapor
+        document.getElementById('rapor-sisa').innerText = sisaPakaiText;
+        document.getElementById('rapor-terbuang').innerText = terbuangText;
+
+        // 3. Ekstrak jadi angka murni untuk dihitung sistem AI
+        let sisaAngka = parseInt(sisaPakaiText.replace(/[^0-9-]/g, '')) || 0;
+        let terbuangAngka = parseInt(terbuangText.replace(/[^0-9-]/g, '')) || 0;
+        
+        // Mencegah error hitungan jika sisa uang sedang minus
+        let sisaPositif = sisaAngka > 0 ? sisaAngka : 0;
+        let totalAmunisi = sisaPositif + terbuangAngka;
+        
+        // 4. Hitung Rasio Kegagalan (%)
+        let rasio = 0;
+        if (totalAmunisi > 0) {
+            rasio = Math.round((terbuangAngka / totalAmunisi) * 100);
+        }
+        document.getElementById('rapor-rasio').innerText = `${rasio} %`;
+
+        // 5. Evaluasi "Verdict" (Tamparan Realita)
+        const verdictEl = document.getElementById('rapor-verdict');
+        if (sisaAngka < 0) {
+            verdictEl.innerText = "MINUS! PUASA JAJAN!";
+            verdictEl.className = "text-xl font-black mt-1 text-red-600 animate-pulse";
+        } else if (rasio > 50) {
+            verdictEl.innerText = "KRITIS BANYAK GAYA";
+            verdictEl.className = "text-xl font-black mt-1 text-red-500";
+        } else if (rasio > 20) {
+            verdictEl.innerText = "AWAS BOCOR HALUS";
+            verdictEl.className = "text-xl font-black mt-1 text-yellow-500";
+        } else {
+            verdictEl.innerText = "SANGAT DISIPLIN 🔥";
+            verdictEl.className = "text-xl font-black mt-1 text-emerald-400";
+        }
     };
     
         window.simpanPengeluaran = async () => {
