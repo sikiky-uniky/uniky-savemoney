@@ -1979,48 +1979,42 @@
 <!-- ==========================================
          KANVAS POSTER RAHASIA (1080x1080) V5 - ANTI BADAI RENDER
     =========================================== -->
-    <div id="poster-rahasia" class="fixed top-0 -left-[9999px] w-[1080px] h-[1080px] bg-[#030712] flex flex-col justify-center items-center text-white z-0 font-sans overflow-hidden box-border pt-4">
-        <!-- Background Layer -->
+    <div id="poster-rahasia" class="fixed top-0 -left-[9999px] w-[1080px] h-[1080px] bg-[#030712] flex flex-col justify-center items-center text-white z-0 font-sans overflow-hidden box-border">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(220,38,38,0.15)_0%,_transparent_75%)] z-0"></div>
         <div class="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:40px_40px] z-0"></div>
         
-        <div class="relative z-10 text-center w-full flex flex-col items-center px-10">
-            <!-- Label Atas (DIPERBESAR) -->
-            <div class="bg-red-950/80 text-red-500 text-xl font-bold tracking-[0.5em] py-3 px-8 rounded-full mb-6 border border-red-500/30">OFFICIAL STATS</div>
+        <div class="relative z-10 text-center w-full px-10">
+            <div class="inline-block bg-red-950/80 text-red-500 text-2xl font-bold tracking-[0.5em] py-3 px-10 rounded-full mb-6 border border-red-500/30">
+                OFFICIAL STATS
+            </div>
             
             <h2 class="text-4xl font-black tracking-[0.4em] text-gray-400 mb-8 uppercase drop-shadow-md">Match Prediction</h2>
             
-            <!-- Big Match (DIPERBESAR) -->
-            <div class="flex justify-center items-center gap-6 mb-12 w-full px-2">
-                <div class="text-[75px] font-black text-blue-500 drop-shadow-[0_0_20px_rgba(59,130,246,0.5)] flex-1 text-right whitespace-nowrap">BAM'S</div>
-                <div class="text-5xl text-gray-600 italic font-black pb-2">VS</div>
-                <div class="text-[75px] font-black text-red-500 drop-shadow-[0_0_25px_rgba(239,68,68,0.7)] flex-1 text-left whitespace-nowrap">GODAAN BOROS</div>
+            <div class="flex justify-center items-center gap-8 mb-10 w-full">
+                <div class="text-[85px] font-black text-blue-500 drop-shadow-[0_0_20px_rgba(59,130,246,0.5)] flex-1 text-right whitespace-nowrap">BAM'S</div>
+                <div class="text-6xl text-gray-600 italic font-black pb-2">VS</div>
+                <div class="text-[85px] font-black text-red-500 drop-shadow-[0_0_25px_rgba(239,68,68,0.7)] flex-1 text-left whitespace-nowrap">GODAAN BOROS</div>
             </div>
             
-            <!-- Verdict Raksasa (FIX ABSOLUT: Layer Pisah anti melorot) -->
-            <div class="relative w-[600px] h-[180px] mx-auto mb-10">
-                <!-- Lapisan Kotak Miring -->
-                <div class="absolute inset-0 bg-red-600 border-4 border-red-400 transform -skew-x-12 shadow-[0_0_60px_rgba(220,38,38,0.6)] z-0"></div>
-                <!-- Lapisan Teks Lurus di Tengah -->
-                <div class="absolute inset-0 z-10 flex items-center justify-center">
-                    <span class="text-[#030712] text-[130px] font-black uppercase tracking-widest leading-none mt-2">LOSE</span>
+            <div class="inline-block bg-red-600 border-4 border-red-400 transform -skew-x-12 shadow-[0_0_60px_rgba(220,38,38,0.6)] px-20 py-4 mb-10">
+                <div class="transform skew-x-12 text-[#030712] text-[130px] font-black uppercase tracking-widest leading-none m-0">
+                    LOSE
                 </div>
             </div>
             
-            <!-- Kotak Statistik Kekalahan (DIPERBESAR & MARGIN DISESUAIKAN) -->
-            <div class="relative bg-gray-900/95 border-t-4 border-red-600 rounded-[2rem] p-10 w-[90%] mx-auto mb-8 shadow-[0_30px_60px_rgba(0,0,0,0.8)] overflow-hidden border-x border-b border-gray-800">
-                <i class="fas fa-skull absolute -right-8 -bottom-12 text-[200px] text-red-500 opacity-5 transform -rotate-12"></i>
+            <div class="relative bg-gray-900/95 border-t-4 border-red-600 rounded-[2rem] py-12 px-10 w-[95%] mx-auto mb-8 shadow-[0_30px_60px_rgba(0,0,0,0.8)] overflow-hidden border-x border-b border-gray-800">
+                <i class="fas fa-skull absolute -right-8 -bottom-12 text-[250px] text-red-500 opacity-5 transform -rotate-12"></i>
                 
-                <p class="text-3xl text-gray-400 mb-4 uppercase tracking-widest font-semibold relative z-10">Total Amunisi Terbuang</p>
+                <p class="text-3xl text-gray-400 mb-6 uppercase tracking-widest font-semibold relative z-10">Total Amunisi Terbuang</p>
                 
-                <p id="poster-terbuang" class="text-[100px] font-black text-red-500 mb-6 drop-shadow-[0_0_15px_rgba(239,68,68,1)] relative z-10">Rp 0</p>
+                <p id="poster-terbuang" class="text-[100px] font-black text-red-500 mb-10 drop-shadow-[0_0_15px_rgba(239,68,68,1)] relative z-10">Rp 0</p>
                 
                 <div class="inline-block bg-red-950/40 border border-red-900/50 px-10 py-5 rounded-xl relative z-10">
                     <p class="text-3xl text-gray-300 italic font-semibold tracking-wide">"Tabungan Nikah Resmi Mundur."</p>
                 </div>
             </div>
             
-            <p class="text-2xl text-gray-600 uppercase tracking-[0.4em] font-bold mt-2">UNIKY FINANCIAL WALL OF SHAME</p>
+            <p class="text-2xl text-gray-600 uppercase tracking-[0.4em] font-bold">UNIKY FINANCIAL WALL OF SHAME</p>
         </div>
     </div>
 
