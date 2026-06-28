@@ -261,38 +261,39 @@
         }
     };
     // =================================================================
-    // Fungsi Generate & Download Poster (Mesin HTML2Canvas)
+    // Fungsi Generate & Download Poster (KUNCI DIMENSI ABSOLUT)
     // =================================================================
     window.cetakPosterSarkas = () => {
         const btnCetak = document.getElementById('btn-cetak-poster');
         const teksAsli = btnCetak.innerHTML;
         
-        // Efek loading di tombol biar kerasa cinematic
         btnCetak.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> MERENDER POSTER...';
         btnCetak.disabled = true;
 
-        // Ambil nominal uang toxic dari rapor untuk dimasukkan ke poster
         const terbuangText = document.getElementById('rapor-terbuang').innerText;
         document.getElementById('poster-terbuang').innerText = terbuangText;
 
         const posterEl = document.getElementById('poster-rahasia');
         
-        // Panggil html2canvas untuk memotret div yang disembunyikan
+        // PANGGIL JURUS PENGUNCIAN KOORDINAT
         html2canvas(posterEl, {
-            scale: 2, // Resolusi 2x lipat biar ultra-realistic dan tajam
+            scale: 2, 
             backgroundColor: "#030712",
-            logging: false
+            logging: false,
+            // Paksa html2canvas memotret sesuai ukuran asli elemen, bukan ukuran layar laptop Mas
+            width: 1080,
+            height: 1080,
+            windowWidth: 1080,
+            windowHeight: 1080,
+            scrollX: 0,
+            scrollY: 0
         }).then(canvas => {
-            // Konversi canvas jadi URL gambar PNG
             const imgData = canvas.toDataURL("image/png");
-            
-            // Buat elemen link tak kasat mata untuk auto-download
             const link = document.createElement('a');
             link.download = `UNIKY-PREDICTION-${Date.now()}.png`;
             link.href = imgData;
-            link.click(); // Paksa klik download
+            link.click();
 
-            // Kembalikan tombol ke kondisi semula
             btnCetak.innerHTML = teksAsli;
             btnCetak.disabled = false;
             
