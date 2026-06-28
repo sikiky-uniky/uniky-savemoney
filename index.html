@@ -260,14 +260,11 @@
             btnPoster.classList.add('hidden');
         }
     };
-    // =================================================================
-    // Fungsi Generate & Download Poster (KUNCI DIMENSI ABSOLUT)
-    // =================================================================
-    window.cetakPosterSarkas = () => {
+    // FUNGSI BARU UNTUK MEMBONGKAR BLOCKADE CACHE BROWSER
+    window.cetakPosterFinal = () => {
         const btnCetak = document.getElementById('btn-cetak-poster');
-        const teksAsli = btnCetak.innerHTML;
         
-        btnCetak.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> MERENDER POSTER...';
+        btnCetak.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> MERENDER POSTER V2...';
         btnCetak.disabled = true;
 
         const terbuangText = document.getElementById('rapor-terbuang').innerText;
@@ -275,12 +272,10 @@
 
         const posterEl = document.getElementById('poster-rahasia');
         
-        // PANGGIL JURUS PENGUNCIAN KOORDINAT
         html2canvas(posterEl, {
             scale: 2, 
             backgroundColor: "#030712",
             logging: false,
-            // Paksa html2canvas memotret sesuai ukuran asli elemen, bukan ukuran layar laptop Mas
             width: 1080,
             height: 1080,
             windowWidth: 1080,
@@ -290,16 +285,16 @@
         }).then(canvas => {
             const imgData = canvas.toDataURL("image/png");
             const link = document.createElement('a');
-            link.download = `UNIKY-PREDICTION-${Date.now()}.png`;
+            link.download = `UNIKY-POSTER-FIXED-${Date.now()}.png`;
             link.href = imgData;
             link.click();
 
-            btnCetak.innerHTML = teksAsli;
+            btnCetak.innerHTML = '<i class="fas fa-camera-retro mr-2"></i> CETAK POSTER KEKALAHAN';
             btnCetak.disabled = false;
             
             Swal.fire({
-                title: 'POSTER TERCETAK!',
-                text: 'Siap ditebar ke arena.',
+                title: 'POSTER TERCETAK PERFECT!',
+                text: 'Grafis terkunci 100%.',
                 icon: 'success',
                 confirmButtonColor: '#10b981'
             });
@@ -1980,7 +1975,7 @@
 <!-- ==========================================
          KANVAS POSTER RAHASIA (1080x1080) V10 ULTIMATE FIX
     =========================================== -->
-    <div id="poster-rahasia" style="position: fixed; top: 0; left: -9999px; width: 1080px; height: 1080px; background-color: #030712; color: white; font-family: sans-serif; box-sizing: border-box; padding-top: 60px; text-align: center; z-index: 0;">
+    <div id="poster-rahasia" style="position: fixed; top: 0; left: -9999px; width: 1080px; height: 1080px; background-color: #030712; color: white; font-family: Arial, sans-serif; box-sizing: border-box; padding-top: 50px; text-align: center; z-index: 0;">
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at center, rgba(220,38,38,0.15) 0%, transparent 75%); z-index: 0;"></div>
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.05; background-image: linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px); background-size: 40px 40px; z-index: 0;"></div>
 
@@ -1989,32 +1984,28 @@
                 OFFICIAL STATS
             </div>
 
-            <h2 style="font-weight: 900; color: #9ca3af; text-transform: uppercase; font-size: 34px; letter-spacing: 0.4em; margin-bottom: 50px; margin-top: 0;">MATCH PREDICTION</h2>
+            <h2 style="font-weight: 900; color: #9ca3af; text-transform: uppercase; font-size: 34px; letter-spacing: 0.4em; margin-bottom: 30px; margin-top: 0;">MATCH PREDICTION</h2>
 
-            <div style="width: 100%; margin-bottom: 50px; text-align: center; padding: 0 40px; box-sizing: border-box;">
-                <span style="font-size: 65px; font-weight: 900; color: #3b82f6; display: block; margin-bottom: 5px;">BAM'S</span>
-                <span style="font-size: 32px; font-weight: 900; color: #4b5563; font-style: italic; display: block; margin-bottom: 5px;">VS</span>
-                <span style="font-size: 65px; font-weight: 900; color: #ef4444; display: block; text-transform: uppercase;">GODAAN BOROS</span>
-            </div>
-
-            <div style="width: 100%; text-align: center; margin-bottom: 50px;">
-                <svg width="550" height="160" viewBox="0 0 550 160" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block;">
-                    <polygon points="34,0 550,0 516,160 0,160" fill="#dc2626" stroke="#f87171" stroke-width="4"/>
-                    <text x="50%" y="115" dominant-baseline="middle" text-anchor="middle" fill="#030712" font-family="sans-serif" font-size="115" font-weight="900" letter-spacing="4">LOSE</text>
+            <div style="width: 100%; text-align: center; margin-bottom: 40px;">
+                <svg width="700" height="400" viewBox="0 0 700 400" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block;">
+                    <text x="50%" y="60" text-anchor="middle" fill="#3b82f6" font-family="sans-serif" font-size="65" font-weight="900" letter-spacing="2">BAM'S</text>
+                    <text x="50%" y="115" text-anchor="middle" fill="#4b5563" font-family="sans-serif" font-size="32" font-weight="900" font-style="italic">VS</text>
+                    <text x="50%" y="180" text-anchor="middle" fill="#ef4444" font-family="sans-serif" font-size="65" font-weight="900" letter-spacing="2">GODAAN BOROS</text>
+                    
+                    <polygon points="109,230 625,230 591,390 75,390" fill="#dc2626" stroke="#f87171" stroke-width="4"/>
+                    <text x="350" y="325" dominant-baseline="middle" text-anchor="middle" fill="#030712" font-family="sans-serif" font-size="115" font-weight="900" letter-spacing="4">LOSE</text>
                 </svg>
             </div>
 
-            <div style="background-color: rgba(17, 24, 39, 0.95); border-top: 4px solid #dc2626; border-radius: 32px; border-left: 1px solid #1f2937; border-right: 1px solid #1f2937; border-bottom: 1px solid #1f2937; width: 85%; margin: 0 auto 40px auto; padding: 40px; box-sizing: border-box; position: relative;">
+            <div style="background-color: rgba(17, 24, 39, 0.95); border-top: 4px solid #dc2626; border-radius: 32px; border-left: 1px solid #1f2937; border-right: 1px solid #1f2937; border-bottom: 1px solid #1f2937; width: 85%; margin: 0 auto; padding: 40px; box-sizing: border-box; position: relative;">
                 <p style="color: #9ca3af; text-transform: uppercase; font-weight: 600; font-size: 26px; letter-spacing: 0.1em; margin-bottom: 20px; margin-top: 0;">TOTAL AMUNISI TERBUANG</p>
-
-                <p id="poster-terbuang" style="font-weight: 900; color: #ef4444; font-size: 90px; margin-bottom: 45px; margin-top: 0; letter-spacing: 2px;">Rp 0</p>
-
+                <p id="poster-terbuang" style="font-weight: 900; color: #ef4444; font-size: 90px; margin-bottom: 40px; margin-top: 0; letter-spacing: 2px;">Rp 0</p>
                 <div style="display: inline-block; background-color: rgba(69, 10, 10, 0.4); border: 1px solid rgba(127, 29, 29, 0.5); border-radius: 12px; padding: 18px 36px;">
                     <p style="color: #d1d5db; font-style: italic; font-weight: 600; font-size: 24px; margin: 0;">"Tabungan Nikah Resmi Mundur."</p>
                 </div>
             </div>
 
-            <p style="color: #4b5563; text-transform: uppercase; font-weight: bold; font-size: 20px; letter-spacing: 0.4em; margin-top: 20px; margin-bottom: 0;">UNIKY FINANCIAL WALL OF SHAME</p>
+            <p style="color: #4b5563; text-transform: uppercase; font-weight: bold; font-size: 20px; letter-spacing: 0.4em; margin-top: 40px; margin-bottom: 0;">UNIKY FINANCIAL WALL OF SHAME</p>
         </div>
     </div>
 
@@ -2076,7 +2067,7 @@
                     class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 rounded-lg transition-colors border border-gray-600 text-sm tracking-wider uppercase">
                     Tutup Analisis
                 </button>
-                <button onclick="cetakPosterSarkas()" id="btn-cetak-poster" class="hidden w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl transition-all duration-300 mt-3 shadow-[0_0_15px_rgba(220,38,38,0.5)]">
+                <button onclick="cetakPosterFinal()" id="btn-cetak-poster" class="hidden w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl transition-all duration-300 mt-3 shadow-[0_0_15px_rgba(220,38,38,0.5)]">
     <i class="fas fa-camera-retro mr-2"></i> CETAK POSTER KEKALAHAN
 </button>
             </div>
